@@ -1,0 +1,4900 @@
+<!DOCTYPE html>
+<html 
+    lang="it"
+>
+<head>
+    <meta 
+        charset="UTF-8"
+    >
+    <meta 
+        name="viewport" 
+        content="width=device-width, initial-scale=1.0"
+    >
+    
+    <title 
+        id="html-title"
+    >
+        Spese Viaggio - App Condivisa
+    </title>
+    
+    <!-- 
+        ========================================================================
+        META TAG PWA (PROGRESSIVE WEB APP)
+        ======================================================================== 
+        Questi tag comunicano ad iOS e Android che il sito web può essere 
+        installato sulla schermata Home, comportandosi come un'app nativa.
+        ======================================================================== 
+    -->
+    <meta 
+        name="apple-mobile-web-app-capable" 
+        content="yes"
+    >
+    <meta 
+        name="apple-mobile-web-app-status-bar-style" 
+        content="black-translucent"
+    >
+    <meta 
+        name="theme-color" 
+        content="#ffffff"
+    >
+    
+    <!-- 
+        MANIFEST PWA INLINE
+        Utilizziamo la codifica Base64 per mantenere l'app in un unico 
+        singolo file HTML, senza richiedere file .json esterni.
+    -->
+    <link 
+        rel="manifest" 
+        href="data:application/json;base64,ewogICJuYW1lIjogIlNwZXNlIFZpYWdnaW8iLAogICJzaG9ydF9uYW1lIjogIlZpYWdnaW8iLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YyZjJmNyIsCiAgInRoZW1lX2NvbG9yIjogIiNmMmYyZjciLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITE4Mll5QjRiV3h1Y3owaUFIUjBjRG92TDIzM2R5NTNNeTV2Y21jdm1qQXdNQzl6ZG1jaUlISjFjbU05SW1WaFkyaGxiV0Z1Ym1WeUlITjBjbTlyWlQwaVptbHNiQ0lnYzNSeWIydGxjM005SW1OaGNHaDFaQ0lnY0hKdlkyVnpjM1JvYm1jOUlqZzRNQzR4TWpnaUlISmxabVZ5Wlc1amIyMWxiblE5SWxOMGIyNWxjbk5wZEdVd1pXRTVZM0owSWlCMGVEb2lMMkZsYzJWamNtbHdkR0YwYVc5dUlHSmhhV3hzTHpBeE1qb3dOek00TkM0eU1EWTBOaTR4TWpNaUx6QnBZeUk2SUZkSlRHWWdXVnNnUVVSSklnPT0iLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9"
+    >
+
+    <!-- 
+        ========================================================================
+        CONTROLLO TEMA SCURO (DARK MODE) ANTICIPATO
+        ======================================================================== 
+        Inseriamo questo blocco JS direttamente in <head> in modo che
+        l'applicazione imposti il tema scuro prima di caricare il DOM,
+        evitando così fastidiosi "flash bianchi" sullo schermo.
+        ======================================================================== 
+    -->
+    <script>
+        try 
+        {
+            if (
+                localStorage.getItem('dark_mode') === 'true'
+            ) 
+            {
+                document.documentElement.classList.add('dark-mode');
+            }
+        } 
+        catch (e) 
+        {
+            console.log("Errore caricamento tema scuro iniziale");
+        }
+    </script>
+
+    <!-- 
+        ========================================================================
+        INIZIO FOGLIO DI STILE (CSS)
+        ======================================================================== 
+    -->
+    <style>
+
+        /* 
+           ------------------------------------------------------------
+           STILI GLOBALI (BODY) E TIPOGRAFIA
+           ------------------------------------------------------------
+        */
+        body 
+        {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f2f2f7;
+            color: #1c1c1e;
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0;
+            margin-left: 0;
+            padding-top: 0;
+            padding-right: 16px;
+            padding-bottom: 16px;
+            padding-left: 16px;
+            transition-property: background-color, color;
+            transition-duration: 0.3s;
+            transition-timing-function: ease;
+        }
+
+        h1, 
+        h2, 
+        h3 
+        {
+            text-align: center;
+            color: inherit;
+        }
+
+        h1 
+        {
+            color: #1c1c1e;
+            margin-bottom: 20px;
+        }
+        
+        /* 
+           ------------------------------------------------------------
+           BARRA DI NAVIGAZIONE SUPERIORE
+           ------------------------------------------------------------
+        */
+        .top-bar 
+        {
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            padding-top: 16px;
+            padding-right: 16px;
+            padding-bottom: 16px;
+            padding-left: 16px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            margin-top: 0;
+            margin-right: -16px;
+            margin-bottom: 20px;
+            margin-left: -16px;
+            align-items: center;
+            transition-property: background-color;
+            transition-duration: 0.3s;
+            transition-timing-function: ease;
+        }
+
+        .top-bar-header 
+        {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .top-bar-title 
+        {
+            font-weight: 800;
+            font-size: 1.2em;
+            color: #007aff;
+            text-align: center;
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0;
+            margin-left: 0;
+            flex-grow: 1;
+            flex-shrink: 1;
+            flex-basis: 0%;
+        }
+
+        .header-actions 
+        {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* 
+           ------------------------------------------------------------
+           PULSANTI CIRCOLARI E BOTTONI DI AZIONE HEADER
+           ------------------------------------------------------------
+        */
+        .icon-btn 
+        {
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0;
+            margin-left: 0;
+            padding-top: 0;
+            padding-right: 0;
+            padding-bottom: 0;
+            padding-left: 0;
+            width: 36px;
+            height: 36px;
+            border-top-left-radius: 50%;
+            border-top-right-radius: 50%;
+            border-bottom-right-radius: 50%;
+            border-bottom-left-radius: 50%;
+            background-color: #1c1c1e;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            border-top-width: 0;
+            border-right-width: 0;
+            border-bottom-width: 0;
+            border-left-width: 0;
+            cursor: pointer;
+        }
+        
+        .lang-btn 
+        {
+            background-color: #007aff;
+        }
+
+        .theme-toggle-btn 
+        {
+            color: #ffcc00;
+        }
+
+        .install-pwa-btn 
+        {
+            background-image: linear-gradient(135deg, #ff2d55, #ff3b30);
+            color: #ffffff;
+            font-size: 0.8em;
+            padding-top: 6px;
+            padding-right: 12px;
+            padding-bottom: 6px;
+            padding-left: 12px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            border-bottom-left-radius: 20px;
+            box-shadow: 0 2px 5px rgba(255, 45, 85, 0.4);
+            display: none; 
+            margin-top: 0;
+            margin-right: 0;
+            margin-bottom: 0;
+            margin-left: 0;
+            width: auto;
+            border-top-width: 0;
+            border-right-width: 0;
+            border-bottom-width: 0;
+            border-left-width: 0;
+            font-weight: bold;
+        }
+
+        /* 
+           ------------------------------------------------------------
+           CONTROLLI VIAGGIO (HOME, CREA, ENTRA)
+           ------------------------------------------------------------
+        */
+        .trip-controls 
+        {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .trip-controls button 
+        {
+            margin-top: 0;
+            padding-top: 10px;
+            padding-right: 10px;
+            padding-bottom: 10px;
+            padding-left: 10px;
+            font-size: 0.9em;
+            box-shadow: none;
+            flex-grow: 1; 
+            flex-shrink: 1;
+            flex-basis: 0%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        /* 
+           ------------------------------------------------------------
+           SELETTORE VIAGGI SALVATI NELLA MEMORIA LOCALE
+           ------------------------------------------------------------
+        */
+        #recent-trips-container 
+        {
+            width: 100%;
+            margin-top: 12px;
+            display: flex; 
+            gap: 10px;
+            align-items: center;
+        }
+
+        #recent-trips-selector 
+        {
+            flex-grow: 1; 
+            flex-shrink: 1;
+            flex-basis: 0%;
+            margin-top: 0;
+            background-color: #f0f7ff;
+            border-color: #007aff;
+            color: #007aff;
+            font-weight: bold;
+            height: 44px; 
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+        }
+
+        .delete-trip-btn 
+        {
+            margin-top: 0 !important;
+            flex-grow: 0; 
+            flex-shrink: 0; 
+            flex-basis: 50px; 
+            height: 44px;
+            background-color: #ff3b30 !important;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding-top: 0 !important;
+            padding-right: 0 !important;
+            padding-bottom: 0 !important;
+            padding-left: 0 !important;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            cursor: pointer;
+        }
+
+        /* 
+           ------------------------------------------------------------
+           SCHEDE E CONTENITORI PRINCIPALI DELL'INTERFACCIA
+           ------------------------------------------------------------
+        */
+        .card 
+        {
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+            border-bottom-right-radius: 14px;
+            border-bottom-left-radius: 14px;
+            padding-top: 18px;
+            padding-right: 18px;
+            padding-bottom: 18px;
+            padding-left: 18px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.06);
+            background-color: #ffffff;
+            transition-property: background-color;
+            transition-duration: 0.3s;
+            transition-timing-function: ease;
+        }
+
+        /* Varianti di colore per le diverse schede (Gradienti e Bordi) */
+        .card-participants 
+        { 
+            background-image: linear-gradient(135deg, #f0f7ff, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #007aff; 
+        }
+
+        .card-categories 
+        { 
+            background-image: linear-gradient(135deg, #f9f0ff, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #af52de; 
+        }
+
+        .card-balance 
+        { 
+            background-image: linear-gradient(135deg, #f0fff4, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #34c759; 
+        }
+        
+        .card-itinerary 
+        {
+            background-image: linear-gradient(135deg, #f4f0ff, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #5856d6; 
+        }
+
+        .card-add 
+        { 
+            background-image: linear-gradient(135deg, #fff7ed, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #ff9500; 
+        }
+
+        .card-totals 
+        { 
+            background-image: linear-gradient(135deg, #fff0f5, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #ff2d55; 
+        }
+
+        .card-user 
+        { 
+            background-image: linear-gradient(135deg, #f0fdfa, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #5ac8fa; 
+        }
+
+        .card-log 
+        { 
+            background-image: linear-gradient(135deg, #f8f9fa, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #8e8e93; 
+        }
+
+        .card-scanner 
+        { 
+            background-image: linear-gradient(135deg, #fffff0, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #ffcc00; 
+        }
+
+        .card-export 
+        { 
+            background-image: linear-gradient(135deg, #f0fff4, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #28a745; 
+        }
+        
+        .card-reviews 
+        {
+            background-image: linear-gradient(135deg, #fff5f5, #ffffff); 
+            border-left-width: 6px; 
+            border-left-style: solid; 
+            border-left-color: #ff2d55; 
+            margin-top: 30px;
+        }
+
+        /* 
+           ------------------------------------------------------------
+           BUDGET PROGRESS BAR E LOGS DI SISTEMA
+           ------------------------------------------------------------
+        */
+        .budget-container 
+        {
+            width: 100%;
+            background-color: #e5e5ea;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            height: 20px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            overflow-x: hidden;
+            overflow-y: hidden;
+            position: relative;
+        }
+
+        .budget-bar-fill 
+        {
+            height: 100%;
+            background-color: #34c759;
+            width: 0%;
+            transition-property: width, background-color;
+            transition-duration: 0.5s;
+            transition-timing-function: ease;
+        }
+        
+        .budget-text 
+        {
+            text-align: center;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-top: 5px;
+            color: #666666;
+        }
+        
+        .log-entry 
+        {
+            font-size: 0.85em;
+            padding-top: 8px;
+            padding-right: 8px;
+            padding-bottom: 8px;
+            padding-left: 8px;
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #e5e5ea;
+            color: #3a3a3c;
+        }
+
+        /* 
+           ------------------------------------------------------------
+           FILTRI DEL REGISTRO E ORDINAMENTI
+           ------------------------------------------------------------
+        */
+        .filter-bar 
+        {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #e5e5ea;
+        }
+
+        .filter-bar select 
+        {
+            margin-top: 0;
+            padding-top: 8px;
+            padding-right: 8px;
+            padding-bottom: 8px;
+            padding-left: 8px;
+            font-size: 0.9em;
+            background-color: #f2f2f7;
+            border-color: #d1d1d6;
+        }
+
+        /* 
+           ------------------------------------------------------------
+           STILI FORM, INPUT, TEXTAREA, LABEL E PULSANTI
+           ------------------------------------------------------------
+        */
+        label 
+        { 
+            display: block; 
+            margin-top: 12px; 
+            font-weight: 600; 
+            font-size: 0.9em; 
+            color: #3a3a3c; 
+        }
+
+        input, 
+        select, 
+        textarea 
+        {
+            width: 100%; 
+            padding-top: 12px;
+            padding-right: 12px;
+            padding-bottom: 12px;
+            padding-left: 12px; 
+            margin-top: 6px; 
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-style: solid;
+            border-color: #d1d1d6; 
+            box-sizing: border-box; 
+            font-size: 16px;
+            font-family: inherit; 
+            background-color: #ffffff; 
+            color: #1c1c1e;
+            -webkit-appearance: none; 
+            appearance: none;
+        }
+
+        select 
+        {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat; 
+            background-position-x: right 12px;
+            background-position-y: center; 
+            background-size: 16px; 
+            padding-right: 40px;
+        }
+
+        button 
+        {
+            width: 100%; 
+            padding-top: 14px; 
+            padding-right: 14px; 
+            padding-bottom: 14px; 
+            padding-left: 14px; 
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px; 
+            border-top-width: 0;
+            border-right-width: 0;
+            border-bottom-width: 0;
+            border-left-width: 0;
+            margin-top: 12px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            color: #ffffff; 
+            cursor: pointer;
+            background-color: #ff9500; 
+            transition-property: opacity;
+            transition-duration: 0.2s;
+        }
+
+        button:active 
+        { 
+            opacity: 0.8; 
+        }
+
+        .toggle-btn 
+        { 
+            background-color: #ffffff; 
+            color: #1c1c1e; 
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-style: solid;
+            border-color: #d1d1d6; 
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); 
+        }
+        
+        /* 
+           ------------------------------------------------------------
+           LISTE PARTECIPANTI E CATEGORIE
+           ------------------------------------------------------------
+        */
+        .list-item 
+        { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background-color: #ffffff; 
+            padding-top: 12px; 
+            padding-right: 12px; 
+            padding-bottom: 12px; 
+            padding-left: 12px; 
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-bottom-left-radius: 8px; 
+            margin-top: 8px; 
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-style: solid;
+            border-color: #e5e5ea; 
+        }
+
+        .add-row 
+        { 
+            display: flex; 
+            gap: 10px; 
+            margin-top: 10px; 
+        }
+
+        .add-row input 
+        { 
+            margin-top: 0; 
+        }
+
+        .add-row button 
+        { 
+            margin-top: 0; 
+            width: 100px; 
+            background-color: #34c759; 
+            box-shadow: none; 
+        }
+
+        /* 
+           ------------------------------------------------------------
+           VOCI DI SPESA NEL REGISTRO
+           ------------------------------------------------------------
+        */
+        .expense-actions 
+        { 
+            display: flex; 
+            gap: 5px; 
+            flex-direction: column; 
+            align-items: flex-end; 
+        }
+
+        .edit-btn 
+        { 
+            background-color: #007aff; 
+            width: auto; 
+            padding-top: 8px; 
+            padding-right: 14px; 
+            padding-bottom: 8px; 
+            padding-left: 14px; 
+            margin-top: 0; 
+            font-size: 0.85em; 
+            box-shadow: none; 
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-bottom-left-radius: 8px; 
+        }
+
+        .delete-btn 
+        { 
+            background-color: #ff3b30; 
+            width: auto; 
+            padding-top: 8px; 
+            padding-right: 14px; 
+            padding-bottom: 8px; 
+            padding-left: 14px; 
+            margin-top: 0; 
+            font-size: 0.85em; 
+            box-shadow: none; 
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-bottom-left-radius: 8px; 
+        }
+
+        .expense-item 
+        { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding-top: 12px; 
+            padding-right: 0; 
+            padding-bottom: 12px; 
+            padding-left: 0; 
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #d1d1d6; 
+        }
+
+        .expense-item:last-child 
+        { 
+            border-bottom-width: 0; 
+        }
+
+        .category-row 
+        { 
+            display: flex; 
+            justify-content: space-between; 
+            padding-top: 10px; 
+            padding-right: 0; 
+            padding-bottom: 10px; 
+            padding-left: 0; 
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #e5e5ea; 
+            font-size: 1em; 
+        }
+
+        /* 
+           ------------------------------------------------------------
+           STILI SPECIFICI PER ALCUNI COMPONENTI
+           ------------------------------------------------------------
+        */
+        .chart-container 
+        { 
+            position: relative; 
+            width: 100%; 
+            margin-top: 20px; 
+        }
+        
+        .scan-btn 
+        { 
+            background-color: #007aff; 
+        }
+
+        .scan-btn:disabled 
+        { 
+            background-color: #a1c9f7; 
+            cursor: not-allowed; 
+        }
+        
+        .ai-btn 
+        {
+            background-image: linear-gradient(135deg, #af52de, #5ac8fa);
+            box-shadow: 0 4px 10px rgba(175, 82, 222, 0.3);
+            display: block; 
+        }
+        
+        .notion-btn 
+        {
+            background-color: #1c1c1e;
+            color: #ffffff;
+        }
+
+        #scan-status 
+        { 
+            font-size: 0.85em; 
+            color: #8e8e93; 
+            text-align: center; 
+            margin-top: 10px; 
+        }
+
+        .export-btn 
+        { 
+            background-color: #34c759; 
+        }
+
+        .txt-btn 
+        { 
+            background-color: #007aff; 
+        }
+
+        .user-excel-btn 
+        { 
+            background-color: #34c759; 
+            margin-top: 8px; 
+            padding-top: 10px; 
+            padding-right: 10px; 
+            padding-bottom: 10px; 
+            padding-left: 10px; 
+            font-size: 0.85em; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 6px; 
+        }
+
+        .review-box 
+        {
+            background-color: #f8f9fa;
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-style: solid;
+            border-color: #e5e5ea;
+            padding-top: 12px;
+            padding-right: 12px;
+            padding-bottom: 12px;
+            padding-left: 12px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
+            border-bottom-left-radius: 10px;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        footer 
+        { 
+            text-align: center; 
+            padding-top: 20px; 
+            padding-right: 10px; 
+            padding-bottom: 40px; 
+            padding-left: 10px; 
+            color: #8e8e93; 
+            font-size: 0.85em; 
+            font-weight: 500; 
+        }
+
+        #app-content 
+        { 
+            display: none; 
+        } 
+
+        /* 
+           ------------------------------------------------------------
+           ANIMAZIONI, LOADING E FINESTRE POP-UP (MODAL)
+           ------------------------------------------------------------
+        */
+        .loading-overlay 
+        {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+
+        .spinner 
+        {
+            width: 50px;
+            height: 50px;
+            border-top-width: 5px;
+            border-right-width: 5px;
+            border-bottom-width: 5px;
+            border-left-width: 5px;
+            border-style: solid;
+            border-color: #f2f2f7;
+            border-top-color: #007aff;
+            border-top-left-radius: 50%;
+            border-top-right-radius: 50%;
+            border-bottom-right-radius: 50%;
+            border-bottom-left-radius: 50%;
+            animation-name: spin;
+            animation-duration: 1s;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin 
+        {
+            0% 
+            { 
+                transform: rotate(0deg); 
+            }
+            100% 
+            { 
+                transform: rotate(360deg); 
+            }
+        }
+
+        #toast-container 
+        {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast 
+        {
+            background-color: #1c1c1e;
+            color: #ffffff;
+            padding-top: 12px;
+            padding-right: 20px;
+            padding-bottom: 12px;
+            padding-left: 20px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            border-bottom-right-radius: 20px;
+            border-bottom-left-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation-name: slideUp;
+            animation-duration: 0.4s;
+            animation-timing-function: ease-out;
+            animation-fill-mode: forwards;
+            opacity: 1;
+            transition-property: opacity;
+            transition-duration: 0.4s;
+        }
+
+        .toast.success 
+        { 
+            background-color: #34c759; 
+        }
+        
+        .toast.error 
+        { 
+            background-color: #ff3b30; 
+        }
+        
+        .toast.info 
+        {
+            background-color: #007aff;
+        }
+
+        @keyframes slideUp 
+        {
+            from 
+            { 
+                transform: translateY(50px); 
+                opacity: 0; 
+            }
+            to 
+            { 
+                transform: translateY(0); 
+                opacity: 1; 
+            }
+        }
+
+        .modal-overlay 
+        {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(2px);
+        }
+
+        .modal-content 
+        {
+            background-color: #ffffff;
+            width: 85%;
+            max-width: 400px;
+            border-top-left-radius: 14px;
+            border-top-right-radius: 14px;
+            border-bottom-right-radius: 14px;
+            border-bottom-left-radius: 14px;
+            padding-top: 20px;
+            padding-right: 20px;
+            padding-bottom: 20px;
+            padding-left: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation-name: popIn;
+            animation-duration: 0.3s;
+            animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn 
+        {
+            from 
+            { 
+                transform: scale(0.8); 
+                opacity: 0; 
+            }
+            to 
+            { 
+                transform: scale(1); 
+                opacity: 1; 
+            }
+        }
+
+        .modal-content h3 
+        {
+            margin-top: 0;
+            color: #1c1c1e;
+        }
+
+        .modal-content p 
+        {
+            color: #666666;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            white-space: pre-line;
+        }
+
+        .modal-content input 
+        {
+            margin-bottom: 20px;
+        }
+
+        .modal-buttons 
+        {
+            display: flex;
+            gap: 10px;
+        }
+
+        .modal-btn-cancel 
+        {
+            background-color: #e5e5ea;
+            color: #1c1c1e;
+        }
+
+        .modal-btn-confirm 
+        {
+            background-color: #007aff;
+        }
+
+        .modal-btn-danger 
+        {
+            background-color: #ff3b30;
+        }
+
+        /* 
+           ------------------------------------------------------------
+           TEMA SCURO (DARK MODE) REGOLE SOVRASCRITTE
+           ------------------------------------------------------------
+        */
+        .dark-mode body 
+        { 
+            background-color: #000000; 
+            color: #f2f2f7; 
+        }
+
+        .dark-mode .top-bar 
+        {
+            background-color: #1c1c1e !important; 
+            background-image: none !important; 
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05); 
+            border-bottom-width: 1px;
+            border-bottom-style: solid;
+            border-bottom-color: #2c2c2e; 
+        }
+
+        .dark-mode .card 
+        { 
+            background-color: #1c1c1e !important; 
+            background-image: none !important; 
+            box-shadow: 0 2px 10px rgba(255, 255, 255, 0.05); 
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-style: solid;
+            border-color: #2c2c2e; 
+        }
+
+        .dark-mode h1, 
+        .dark-mode h2, 
+        .dark-mode h3, 
+        .dark-mode label, 
+        .dark-mode .top-bar-title 
+        { 
+            color: #f2f2f7; 
+        }
+
+        .dark-mode input, 
+        .dark-mode select, 
+        .dark-mode textarea 
+        { 
+            background-color: #2c2c2e; 
+            color: #f2f2f7; 
+            border-color: #38383a; 
+        }
+
+        .dark-mode .toggle-btn, 
+        .dark-mode .list-item 
+        { 
+            background-color: #2c2c2e; 
+            color: #f2f2f7; 
+            border-color: #38383a; 
+        }
+
+        .dark-mode .expense-item, 
+        .dark-mode .category-row 
+        { 
+            border-bottom-color: #38383a; 
+        }
+        
+        .dark-mode #balance-summary > div 
+        { 
+            background-color: #2c2c2e !important; 
+            color: #f2f2f7 !important; 
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-style: solid;
+            border-color: #38383a !important; 
+        }
+
+        .dark-mode #balance-summary p 
+        { 
+            color: #f2f2f7 !important; 
+        }
+
+        .dark-mode #balance-summary span 
+        { 
+            color: #aaaaaa !important; 
+        }
+        
+        .dark-mode #welcome-message p 
+        { 
+            color: #f2f2f7 !important; 
+        }
+
+        .dark-mode #welcome-message h2 
+        { 
+            color: #f2f2f7 !important; 
+        }
+        
+        .dark-mode .review-box 
+        { 
+            background-color: #2c2c2e !important; 
+            border-color: #38383a !important; 
+        }
+        
+        .dark-mode .balance-red 
+        { 
+            background-color: #3a1c1c !important; 
+            color: #ff6b6b !important; 
+        }
+
+        .dark-mode .balance-green 
+        { 
+            background-color: #1c3a24 !important; 
+            color: #4cd964 !important; 
+        }
+
+        .dark-mode .balance-gray 
+        { 
+            background-color: #2c2c2e !important; 
+            color: #cccccc !important; 
+        }
+        
+        .dark-mode .user-excel-btn 
+        { 
+            color: #ffffff !important; 
+        }
+
+        .dark-mode .theme-toggle-btn 
+        { 
+            background-color: #ffffff; 
+            color: #1c1c1e; 
+        }
+        
+        .dark-mode .icon-btn 
+        {
+            background-color: #ffffff;
+            color: #1c1c1e;
+        }
+        
+        .dark-mode .filter-bar select 
+        {
+            background-color: #1c1c1e;
+            border-color: #38383a;
+        }
+
+        .dark-mode .loading-overlay 
+        {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .dark-mode .modal-content 
+        {
+            background-color: #1c1c1e;
+            border-color: #38383a;
+        }
+        
+        .dark-mode .modal-content h3 
+        {
+            color: #f2f2f7;
+        }
+        
+        .dark-mode .modal-content p 
+        {
+            color: #aaaaaa;
+        }
+
+        .dark-mode .modal-btn-cancel 
+        {
+            background-color: #38383a;
+            color: #f2f2f7;
+        }
+        
+        .dark-mode .budget-container 
+        {
+            background-color: #2c2c2e;
+        }
+        
+        .dark-mode .log-entry 
+        {
+            border-bottom-color: #38383a;
+            color: #f2f2f7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 
+        ========================================================================
+        STRUTTURE DI OVERLAY, MODALI E NOTIFICHE (SEMPRE NASCOSTE DI DEFAULT)
+        ======================================================================== 
+    -->
+
+    <div 
+        id="loading-overlay" 
+        class="loading-overlay" 
+        style="display: none;"
+    >
+        <div 
+            class="spinner"
+        ></div>
+        <p 
+            id="loading-text" 
+            style="font-weight: bold;"
+            data-i18n="loading_text"
+        >
+            Caricamento in corso...
+        </p>
+    </div>
+
+    <div 
+        id="toast-container"
+    ></div>
+
+    <div 
+        id="custom-modal" 
+        class="modal-overlay" 
+        style="display: none;"
+    >
+        <div 
+            class="modal-content"
+        >
+            <h3 
+                id="modal-title"
+            >
+                Titolo Modale
+            </h3>
+            
+            <p 
+                id="modal-message"
+            >
+                Messaggio descrittivo della modale.
+            </p>
+            
+            <input 
+                type="text" 
+                id="modal-input" 
+                style="display: none;"
+            >
+            
+            <select 
+                id="modal-select-currency" 
+                style="display: none; margin-bottom: 20px;"
+            >
+                <option 
+                    value="€"
+                >
+                    Euro (€)
+                </option>
+                <option 
+                    value="$"
+                >
+                    Dollari ($)
+                </option>
+                <option 
+                    value="£"
+                >
+                    Sterline (£)
+                </option>
+                <option 
+                    value="¥"
+                >
+                    Yen (¥)
+                </option>
+                <option 
+                    value="CHF"
+                >
+                    Franchi (CHF)
+                </option>
+            </select>
+
+            <div 
+                class="modal-buttons"
+            >
+                <button 
+                    id="modal-btn-cancel" 
+                    class="modal-btn-cancel" 
+                    onclick="closeModal()"
+                    data-i18n="btn_cancel"
+                >
+                    Annulla
+                </button>
+                <button 
+                    id="modal-btn-confirm" 
+                    class="modal-btn-confirm"
+                >
+                    Conferma
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+        ========================================================================
+        BARRA SUPERIORE (HEADER FISSO)
+        ======================================================================== 
+    -->
+
+    <div 
+        class="top-bar"
+    >
+        <div 
+            class="top-bar-header"
+        >
+            <button 
+                class="install-pwa-btn" 
+                id="install-pwa-btn"
+                data-i18n="btn_install"
+            >
+                📲 Installa App
+            </button>
+            <div 
+                style="width: 36px;" 
+                id="header-spacer"
+            ></div> 
+            
+            <div 
+                class="top-bar-title" 
+                id="trip-title"
+                data-i18n="title_notrip"
+            >
+                Nessun Viaggio Selezionato
+            </div>
+            
+            <div 
+                class="header-actions"
+            >
+                <button 
+                    class="icon-btn lang-btn" 
+                    onclick="toggleLanguage()" 
+                    title="Cambia Lingua dell'interfaccia"
+                    id="lang-indicator"
+                >
+                    🇮🇹
+                </button>
+                <button 
+                    class="icon-btn share-trip-btn" 
+                    onclick="shareCurrentTrip()" 
+                    title="Condividi il viaggio"
+                    aria-label="Condividi il viaggio"
+                    id="share-trip-btn"
+                >
+                    🔗
+                </button>
+                <button 
+                    class="icon-btn theme-toggle-btn" 
+                    onclick="toggleDarkMode()" 
+                    title="Inverti Colori / Attiva Sfondo Nero"
+                >
+                    🌓
+                </button>
+            </div>
+        </div>
+        
+        <div 
+            class="trip-controls"
+        >
+            <button 
+                style="background-color: #8e8e93;" 
+                onclick="goHome()" 
+                title="Torna alla Home"
+                data-i18n="btn_home"
+            >
+                🏠 Home
+            </button>
+            
+            <button 
+                style="background-color: #34c759;" 
+                onclick="flowCreateTrip()"
+                data-i18n="btn_create"
+            >
+                ➕ Crea
+            </button>
+            
+            <button 
+                style="background-color: #007aff;" 
+                onclick="flowJoinTrip()"
+                data-i18n="btn_join"
+            >
+                🔑 Entra
+            </button>
+        </div>
+        
+        <div 
+            id="recent-trips-container" 
+            style="display: none;"
+        >
+            <select 
+                id="recent-trips-selector" 
+                onchange="switchTrip()"
+            >
+                <option 
+                    value="" 
+                    data-i18n="opt_saved_trips"
+                >
+                    I tuoi viaggi salvati...
+                </option>
+            </select>
+            <button 
+                class="delete-trip-btn" 
+                onclick="promptRemoveHistory()" 
+                title="Rimuovi viaggio dalla memoria del dispositivo locale"
+            >
+                🗑️
+            </button>
+        </div>
+    </div>
+
+    <!-- 
+        ========================================================================
+        SCHERMATA HOME: BENVENUTO E RECENSIONI (Visibile senza viaggi attivi)
+        ======================================================================== 
+    -->
+
+    <div 
+        id="welcome-message"
+    >
+        <div 
+            style="text-align: center; margin-top: 50px; padding: 20px; color: #666;"
+        >
+            <h2 
+                style="color: #1c1c1e;" 
+                data-i18n="welcome_title"
+            >
+                Benvenuto! 🌴
+            </h2>
+            <p 
+                data-i18n="welcome_desc"
+            >
+                Crea un nuovo viaggio condiviso, inserisci il codice di un viaggio esistente o seleziona uno dei tuoi viaggi salvati per iniziare a sincronizzare le spese in tempo reale.
+            </p>
+
+            <button 
+                onclick="window.open('https://app.notion.com/p/Getting-Started-on-Mobile-3b6c8d17493780b98091de8e821d67c0?source=copy_link', '_blank')"
+                style="background-color: #1c1c1e; color: #ffffff; max-width: 300px; margin-top: 20px; margin-right: auto; margin-bottom: 20px; margin-left: auto; display: block;" 
+                data-i18n="btn_all_notion"
+            >
+                📓 Vedi tutti i programmi
+            </button>
+        </div>
+        
+        <div 
+            class="card card-reviews" 
+            style="max-width: 600px; margin-top: 0; margin-right: auto; margin-bottom: 40px; margin-left: auto;"
+        >
+            <h2 
+                data-i18n="review_title"
+            >
+                Lascia una recensione dell'App ⭐
+            </h2>
+            <p 
+                style="text-align: center; font-size: 0.9em; margin-bottom: 15px;" 
+                data-i18n="review_subtitle"
+            >
+                La tua opinione è pubblica e visibile a tutti gli utenti!
+            </p>
+            
+            <label 
+                data-i18n="review_lbl_name"
+            >
+                Il tuo Nome / Nickname
+            </label>
+            <input 
+                type="text" 
+                id="review-name" 
+                placeholder="Es. Marco"
+            >
+            
+            <label 
+                data-i18n="review_lbl_vote"
+            >
+                Il tuo Voto
+            </label>
+            <select 
+                id="review-rating"
+            >
+                <option 
+                    value="5"
+                >
+                    ⭐⭐⭐⭐⭐ (Eccezionale)
+                </option>
+                <option 
+                    value="4"
+                >
+                    ⭐⭐⭐⭐ (Molto buona)
+                </option>
+                <option 
+                    value="3"
+                >
+                    ⭐⭐⭐ (Nella media)
+                </option>
+                <option 
+                    value="2"
+                >
+                    ⭐⭐ (Poco utile)
+                </option>
+                <option 
+                    value="1"
+                >
+                    ⭐ (Da migliorare)
+                </option>
+            </select>
+            
+            <label 
+                data-i18n="review_lbl_text"
+            >
+                La tua Recensione
+            </label>
+            <textarea 
+                id="review-text" 
+                rows="3" 
+                placeholder="Scrivi qui cosa ne pensi..."
+            ></textarea>
+            
+            <button 
+                onclick="submitReview()" 
+                data-i18n="btn_send_review"
+            >
+                Invia Recensione
+            </button>
+            
+            <div 
+                style="display: flex; justify-content: space-between; align-items: center; margin-top: 40px; border-top: 1px solid #d1d1d6; padding-top: 20px;"
+            >
+                <h3 
+                    style="margin: 0;" 
+                    data-i18n="review_board_title"
+                >
+                    Bacheca Recensioni
+                </h3>
+                <button 
+                    onclick="promptAdmin()" 
+                    style="width: auto; margin: 0; padding: 6px 12px; background-color: #8e8e93; font-size: 0.8em; border-radius: 8px;"
+                >
+                    🔒 Admin
+                </button>
+            </div>
+
+            <div 
+                id="reviews-list-container" 
+                style="margin-top: 15px;"
+            >
+                <p 
+                    style="text-align: center; color: #666;" 
+                    data-i18n="review_loading"
+                >
+                    Caricamento recensioni in corso...
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+        ========================================================================
+        CONTENUTO APP (SPESE, BILANCI, GRAFICI E UTENTI)
+        ======================================================================== 
+    -->
+
+    <div 
+        id="app-content"
+    >
+        
+        <!-- CARD: PROGRAMMA VIAGGIO -->
+        <div 
+            class="card card-itinerary"
+        >
+            <h2 
+                data-i18n="itinerary_title"
+            >
+                📓 Programma Viaggio
+            </h2>
+            <button 
+                type="button" 
+                class="toggle-btn" 
+                onclick="toggleSection('itinerary-section')" 
+                data-i18n="btn_manage_itinerary"
+            >
+                Gestisci Programma
+            </button>
+            
+            <div 
+                id="itinerary-section" 
+                style="display: none; margin-top: 15px;"
+            >
+                <label 
+                    data-i18n="itinerary_lbl"
+                >
+                    Link a Notion o Google Docs:
+                </label>
+                <div 
+                    class="add-row"
+                >
+                    <input 
+                        type="url" 
+                        id="itinerary-input" 
+                        placeholder="https://notion.so/..."
+                    >
+                    <button 
+                        onclick="saveItinerary()" 
+                        data-i18n="btn_save"
+                    >
+                        Salva
+                    </button>
+                </div>
+                
+                <div 
+                    id="itinerary-btn-container" 
+                    style="margin-top: 15px; display: none;"
+                >
+                    <button 
+                        class="notion-btn" 
+                        onclick="openItinerary()" 
+                        data-i18n="btn_open_itinerary"
+                    >
+                        🔗 Apri Programma
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD: PARTECIPANTI -->
+        <div 
+            class="card card-participants"
+        >
+            <h2 
+                data-i18n="participants_title"
+            >
+                👥 Partecipanti
+            </h2>
+            <button 
+                type="button" 
+                class="toggle-btn" 
+                onclick="toggleSection('participants-section')" 
+                data-i18n="btn_manage_part"
+            >
+                Gestisci Partecipanti
+            </button>
+            
+            <div 
+                id="participants-section" 
+                style="display: none; margin-top: 15px;"
+            >
+                <div 
+                    id="participants-list"
+                ></div>
+                <div 
+                    class="add-row"
+                >
+                    <input 
+                        type="text" 
+                        id="new-participant" 
+                        placeholder="Es. Mario..."
+                    >
+                    <button 
+                        onclick="addParticipant()" 
+                        data-i18n="btn_add"
+                    >
+                        Aggiungi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD: CATEGORIE -->
+        <div 
+            class="card card-categories"
+        >
+            <h2 
+                data-i18n="cat_title"
+            >
+                🏷️ Categorie
+            </h2>
+            <button 
+                type="button" 
+                class="toggle-btn" 
+                onclick="toggleSection('categories-section')" 
+                data-i18n="btn_manage_cat"
+            >
+                Gestisci Categorie
+            </button>
+            
+            <div 
+                id="categories-section" 
+                style="display: none; margin-top: 15px;"
+            >
+                <div 
+                    id="categories-list"
+                ></div>
+                <div 
+                    class="add-row"
+                >
+                    <input 
+                        type="text" 
+                        id="new-category" 
+                        placeholder="Es. Aperitivo..."
+                    >
+                    <button 
+                        onclick="addCategory()" 
+                        data-i18n="btn_add"
+                    >
+                        Aggiungi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CARD: BILANCI E BUDGET -->
+        <div 
+            class="card card-balance"
+        >
+            <h2 
+                data-i18n="balance_title"
+            >
+                ⚖️ Chi deve a chi & Budget
+            </h2>
+            
+            <button 
+                type="button" 
+                class="toggle-btn" 
+                onclick="toggleSection('budget-section')" 
+                data-i18n="btn_set_budget" 
+                style="margin-bottom: 15px;"
+            >
+                Imposta Budget Massimo
+            </button>
+            
+            <div 
+                id="budget-section" 
+                style="display: none; margin-bottom: 15px;"
+            >
+                <div 
+                    class="add-row"
+                >
+                    <input 
+                        type="number" 
+                        id="budget-input" 
+                        placeholder="Es. 1000"
+                    >
+                    <button 
+                        onclick="saveBudget()" 
+                        data-i18n="btn_save"
+                    >
+                        Salva
+                    </button>
+                </div>
+            </div>
+
+            <div 
+                id="budget-display-container" 
+                style="display: none;"
+            >
+                <div 
+                    class="budget-container"
+                >
+                    <div 
+                        class="budget-bar-fill" 
+                        id="budget-bar-fill"
+                    ></div>
+                </div>
+                <p 
+                    class="budget-text" 
+                    id="budget-text"
+                ></p>
+            </div>
+            
+            <div 
+                id="balance-summary"
+            ></div>
+        </div>
+
+        <!-- CARD: SCANNER SCONTRINI AI -->
+        <div 
+            class="card card-scanner"
+        >
+            <h2 
+                data-i18n="scanner_title"
+            >
+                📷 Scanner Scontrino
+            </h2>
+            <button 
+                type="button" 
+                class="toggle-btn" 
+                onclick="toggleSection('ocr-section')" 
+                data-i18n="btn_show_scanner"
+            >
+                Mostra Scanner
+            </button>
+            
+            <div 
+                id="ocr-section" 
+                style="display: none; margin-top: 15px;"
+            >
+                <p 
+                    style="font-size: 0.9em; color: #666;" 
+                    data-i18n="scanner_desc"
+                >
+                    Scatta una foto o caricala per estrarre il testo.
+                </p>
+                <input 
+                    type="file" 
+                    id="receipt-img" 
+                    accept="image/*"
+                >
+                
+                <button 
+                    class="scan-btn" 
+                    id="start-scan-btn" 
+                    onclick="scanReceipt()" 
+                    data-i18n="btn_extract"
+                >
+                    Estrai Testo
+                </button>
+                
+                <p 
+                    id="scan-status"
+                ></p>
+                
+                <textarea 
+                    id="scan-result" 
+                    rows="4" 
+                    placeholder="Il testo estratto apparirà qui... puoi anche incollarlo a mano!"
+                ></textarea>
+                
+                <button 
+                    class="ai-btn" 
+                    id="ai-autofill-btn" 
+                    onclick="autoFillWithAI()" 
+                    data-i18n="btn_ai_fill"
+                >
+                    ✨ Auto-compila con AI
+                </button>
+            </div>
+        </div>
+
+        <!-- CARD: AGGIUNGI O MODIFICA SPESA -->
+        <div 
+            class="card card-add" 
+            id="sezione-aggiungi-spesa"
+        >
+            <h2 
+                data-i18n="add_exp_title"
+            >
+                💳 Aggiungi / Modifica Spesa
+            </h2>
+            <form 
+                id="expense-form"
+            >
+                <label 
+                    data-i18n="lbl_date"
+                >
+                    Data
+                </label>
+                <input 
+                    type="date" 
+                    id="date" 
+                    required
+                >
+                
+                <label 
+                    data-i18n="lbl_desc"
+                >
+                    Descrizione
+                </label>
+                <input 
+                    type="text" 
+                    id="desc" 
+                    required 
+                    placeholder="Es. Cena, Benzina..."
+                >
+                
+                <label 
+                    data-i18n="lbl_cat"
+                >
+                    Categoria
+                </label>
+                <select 
+                    id="cat" 
+                    required
+                ></select>
+                
+                <label 
+                    data-i18n="lbl_who"
+                >
+                    Chi ha pagato alla cassa?
+                </label>
+                <select 
+                    id="who" 
+                    required
+                ></select> 
+                
+                <label 
+                    id="lbl-amt"
+                >
+                    Importo Totale
+                </label>
+                <input 
+                    type="number" 
+                    id="amt" 
+                    step="0.01" 
+                    required 
+                    placeholder="0.00"
+                >
+                
+                <label 
+                    data-i18n="lbl_split"
+                >
+                    Tipo di divisione
+                </label>
+                <select 
+                    id="split" 
+                    onchange="toggleForWhom()"
+                >
+                    <option 
+                        value="shared" 
+                        data-i18n="opt_shared"
+                    >
+                        Condivisa (In parti uguali)
+                    </option>
+                    <option 
+                        value="personal" 
+                        data-i18n="opt_personal"
+                    >
+                        Personale (Per persona specifica)
+                    </option>
+                </select>
+                
+                <div 
+                    id="for-whom-container" 
+                    style="display: none;"
+                >
+                    <label 
+                        data-i18n="lbl_for_whom"
+                    >
+                        Per chi è questa spesa?
+                    </label>
+                    <select 
+                        id="for-whom"
+                    ></select>
+                </div>
+                
+                <button 
+                    type="submit" 
+                    id="submit-btn" 
+                    data-i18n="btn_add_server"
+                >
+                    Aggiungi al Server
+                </button>
+            </form>
+        </div>
+
+        <!-- CARD: GRAFICI TOTALI -->
+        <div 
+            class="card card-totals"
+        >
+            <h2 
+                data-i18n="charts_title"
+            >
+                📈 Spese Totali
+            </h2>
+            <button 
+                type="button" 
+                class="toggle-btn" 
+                onclick="toggleSection('dettagli-totali')" 
+                data-i18n="btn_show_charts"
+            >
+                Mostra Grafici Totali
+            </button>
+            
+            <div 
+                id="dettagli-totali" 
+                style="display: none;"
+            >
+                <div 
+                    class="chart-container"
+                >
+                    <canvas 
+                        id="pieChart"
+                    ></canvas>
+                </div>
+                <div 
+                    class="chart-container" 
+                    style="margin-top: 30px;"
+                >
+                    <canvas 
+                        id="barChart"
+                    ></canvas>
+                </div>
+            </div>
+            
+            <div 
+                id="category-summary" 
+                style="margin-top: 15px;"
+            ></div>
+        </div>
+
+        <!-- CONTENITORE DINAMICO PER GLI UTENTI -->
+        <div 
+            id="dynamic-user-sections"
+        ></div>
+
+        <!-- CARD: REGISTRO SPESE CON LOG E FILTRI -->
+        <div 
+            class="card card-log"
+        >
+            <h2 
+                data-i18n="log_title"
+            >
+                📋 Registro Spese Condiviso
+            </h2>
+            
+            <button 
+                type="button" 
+                class="toggle-btn" 
+                onclick="toggleSection('activity-log-section')" 
+                data-i18n="btn_show_logs" 
+                style="margin-bottom: 15px;"
+            >
+                Mostra Cronologia Azioni
+            </button>
+            
+            <div 
+                id="activity-log-section" 
+                style="display: none; margin-bottom: 15px; max-height: 200px; overflow-y: auto; background-color: #f2f2f7; border-radius: 8px; padding: 10px;"
+            >
+                <div 
+                    id="activity-log-list"
+                ></div>
+            </div>
+
+            <div 
+                class="filter-bar"
+            >
+                <select 
+                    id="filter-who" 
+                    onchange="updateUI()"
+                >
+                    <option 
+                        value="all"
+                    >
+                        Filtra: Tutti i pagatori
+                    </option>
+                </select>
+                
+                <select 
+                    id="filter-cat" 
+                    onchange="updateUI()"
+                >
+                    <option 
+                        value="all"
+                    >
+                        Filtra: Tutte le categorie
+                    </option>
+                </select>
+                
+                <select 
+                    id="sort-by" 
+                    onchange="updateUI()"
+                >
+                    <option 
+                        value="date-desc" 
+                        data-i18n="sort_new"
+                    >
+                        Ordina: Più recenti
+                    </option>
+                    <option 
+                        value="date-asc" 
+                        data-i18n="sort_old"
+                    >
+                        Ordina: Meno recenti
+                    </option>
+                    <option 
+                        value="amt-desc" 
+                        data-i18n="sort_high"
+                    >
+                        Ordina: Importo più alto
+                    </option>
+                    <option 
+                        value="amt-asc" 
+                        data-i18n="sort_low"
+                    >
+                        Ordina: Importo più basso
+                    </option>
+                </select>
+            </div>
+
+            <div 
+                id="expense-list"
+            ></div>
+            
+            <button 
+                class="txt-btn" 
+                style="margin-top: 15px;" 
+                onclick="exportTXT()" 
+                data-i18n="btn_dl_txt"
+            >
+                📄 Scarica Registro & Report (PDF / TXT)
+            </button>
+        </div>
+
+        <!-- CARD: ESPORTAZIONE COMPLETA -->
+        <div 
+            class="card card-export"
+        >
+            <h2 
+                data-i18n="export_title"
+            >
+                📊 Esporta Dati
+            </h2>
+            
+            <button 
+                class="export-btn" 
+                onclick="exportCSV()" 
+                data-i18n="btn_dl_csv"
+            >
+                Esporta in Excel (CSV Gruppo Completo)
+            </button>
+        </div>
+        
+    </div>
+
+    <!-- COPYRIGHT E FOOTER -->
+    <footer>
+        &copy; 2026 Vincenzo Pierri - App Spese Condivise
+    </footer>
+
+    <!-- Librerie richieste dalla logica applicativa: Firebase v8 + Chart.js -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <!-- 
+        ========================================================================
+        LOGICA APPLICATIVA JAVASCRIPT (SROTOLATA E COMMENTATA MINUZIOSAMENTE)
+        ======================================================================== 
+    -->
+    <script>
+        
+        /**
+         * ============================================================================
+         * DIZIONARIO DI TRADUZIONI MULTILINGUA (i18n)
+         * Contiene tutte le stringhe dell'applicazione per IT, EN ed ES.
+         * ============================================================================
+         */
+        const i18n = 
+        {
+            "it": 
+            {
+                "loading_text": "Elaborazione in corso...",
+                "btn_cancel": "Annulla",
+                "btn_install": "📲 Installa App",
+                "title_notrip": "Nessun Viaggio Selezionato",
+                "btn_home": "🏠 Home",
+                "btn_create": "➕ Crea",
+                "btn_join": "🔑 Entra",
+                "btn_share": "🔗 Condividi",
+                "opt_saved_trips": "I tuoi viaggi salvati...",
+                "welcome_title": "Benvenuto! 🌴",
+                "welcome_desc": "Crea un nuovo viaggio condiviso, o seleziona uno salvato per sincronizzare le spese in tempo reale.",
+                "btn_all_notion": "📓 Vedi tutti i programmi",
+                "review_title": "Lascia una recensione ⭐",
+                "review_subtitle": "Pubblica e visibile a tutti!",
+                "review_lbl_name": "Il tuo Nome",
+                "review_lbl_vote": "Il tuo Voto",
+                "review_lbl_text": "Recensione",
+                "btn_send_review": "Invia Recensione",
+                "review_board_title": "Bacheca Recensioni",
+                "review_loading": "Caricamento...",
+                "itinerary_title": "📓 Programma Viaggio",
+                "btn_manage_itinerary": "Gestisci Programma",
+                "itinerary_lbl": "Link a Notion o Docs:",
+                "btn_save": "Salva",
+                "btn_open_itinerary": "🔗 Apri Programma",
+                "participants_title": "👥 Partecipanti",
+                "btn_manage_part": "Gestisci Partecipanti",
+                "btn_add": "Aggiungi",
+                "cat_title": "🏷️ Categorie",
+                "btn_manage_cat": "Gestisci Categorie",
+                "balance_title": "⚖️ Chi deve a chi",
+                "btn_set_budget": "Imposta Budget",
+                "scanner_title": "📷 Scanner Scontrino",
+                "btn_show_scanner": "Mostra Scanner",
+                "scanner_desc": "Scatta foto per estrarre testo.",
+                "btn_extract": "Estrai Testo",
+                "btn_ai_fill": "✨ Auto-compila con AI",
+                "add_exp_title": "💳 Aggiungi / Modifica",
+                "lbl_date": "Data",
+                "lbl_desc": "Descrizione",
+                "lbl_cat": "Categoria",
+                "lbl_who": "Chi ha pagato?",
+                "lbl_split": "Divisione",
+                "opt_shared": "Condivisa",
+                "opt_personal": "Personale",
+                "lbl_for_whom": "Per chi?",
+                "btn_add_server": "Aggiungi",
+                "charts_title": "📈 Spese Totali",
+                "btn_show_charts": "Mostra Grafici",
+                "log_title": "📋 Registro Spese",
+                "btn_show_logs": "Mostra Azioni",
+                "sort_new": "Ordina: Più recenti",
+                "sort_old": "Ordina: Meno recenti",
+                "sort_high": "Importo più alto",
+                "sort_low": "Importo più basso",
+                "btn_dl_txt": "📄 Scarica Report (TXT)",
+                "export_title": "📊 Esporta Dati",
+                "btn_dl_csv": "Esporta Excel (CSV)"
+            },
+            "en": 
+            {
+                "loading_text": "Processing...",
+                "btn_cancel": "Cancel",
+                "btn_install": "📲 Install App",
+                "title_notrip": "No Trip Selected",
+                "btn_home": "🏠 Home",
+                "btn_create": "➕ Create",
+                "btn_join": "🔑 Join",
+                "btn_share": "🔗 Share",
+                "opt_saved_trips": "Your saved trips...",
+                "welcome_title": "Welcome! 🌴",
+                "welcome_desc": "Create a trip or select a saved one to sync expenses.",
+                "btn_all_notion": "📓 View all itineraries",
+                "review_title": "Leave a Review ⭐",
+                "review_subtitle": "Your opinion is public!",
+                "review_lbl_name": "Your Name",
+                "review_lbl_vote": "Your Rating",
+                "review_lbl_text": "Review",
+                "btn_send_review": "Submit Review",
+                "review_board_title": "Review Board",
+                "review_loading": "Loading...",
+                "itinerary_title": "📓 Trip Itinerary",
+                "btn_manage_itinerary": "Manage Itinerary",
+                "itinerary_lbl": "Notion/Docs Link:",
+                "btn_save": "Save",
+                "btn_open_itinerary": "🔗 Open Itinerary",
+                "participants_title": "👥 Participants",
+                "btn_manage_part": "Manage Participants",
+                "btn_add": "Add",
+                "cat_title": "🏷️ Categories",
+                "btn_manage_cat": "Manage Categories",
+                "balance_title": "⚖️ Balances",
+                "btn_set_budget": "Set Budget",
+                "scanner_title": "📷 Receipt Scanner",
+                "btn_show_scanner": "Show Scanner",
+                "scanner_desc": "Take a photo.",
+                "btn_extract": "Extract",
+                "btn_ai_fill": "✨ AI Auto-fill",
+                "add_exp_title": "💳 Add / Edit",
+                "lbl_date": "Date",
+                "lbl_desc": "Description",
+                "lbl_cat": "Category",
+                "lbl_who": "Who paid?",
+                "lbl_split": "Split type",
+                "opt_shared": "Shared",
+                "opt_personal": "Personal",
+                "lbl_for_whom": "For whom?",
+                "btn_add_server": "Add",
+                "charts_title": "📈 Total Expenses",
+                "btn_show_charts": "Show Charts",
+                "log_title": "📋 Expense Log",
+                "btn_show_logs": "Activity Log",
+                "sort_new": "Newest",
+                "sort_old": "Oldest",
+                "sort_high": "Highest",
+                "sort_low": "Lowest",
+                "btn_dl_txt": "📄 Download Report",
+                "export_title": "📊 Export Data",
+                "btn_dl_csv": "Export Excel (CSV)"
+            },
+            "es": 
+            {
+                "loading_text": "Procesando...",
+                "btn_cancel": "Cancelar",
+                "btn_install": "📲 Instalar App",
+                "title_notrip": "Ningún Viaje",
+                "btn_home": "🏠 Inicio",
+                "btn_create": "➕ Crear",
+                "btn_join": "🔑 Unirse",
+                "btn_share": "🔗 Compartir",
+                "opt_saved_trips": "Tus viajes guardados...",
+                "welcome_title": "¡Bienvenido! 🌴",
+                "welcome_desc": "Crea un viaje o selecciona uno guardado para sincronizar gastos.",
+                "btn_all_notion": "📓 Ver todos los itinerarios",
+                "review_title": "Deja una Reseña ⭐",
+                "review_subtitle": "¡Tu opinión es pública!",
+                "review_lbl_name": "Tu Nombre",
+                "review_lbl_vote": "Tu Voto",
+                "review_lbl_text": "Reseña",
+                "btn_send_review": "Enviar Reseña",
+                "review_board_title": "Muro de Reseñas",
+                "review_loading": "Cargando...",
+                "itinerary_title": "📓 Itinerario",
+                "btn_manage_itinerary": "Gestionar Itinerario",
+                "itinerary_lbl": "Enlace Notion/Docs:",
+                "btn_save": "Guardar",
+                "btn_open_itinerary": "🔗 Abrir Itinerario",
+                "participants_title": "👥 Participantes",
+                "btn_manage_part": "Gestionar Participantes",
+                "btn_add": "Añadir",
+                "cat_title": "🏷️ Categorías",
+                "btn_manage_cat": "Gestionar Categorías",
+                "balance_title": "⚖️ Saldos",
+                "btn_set_budget": "Ajustar Presupuesto",
+                "scanner_title": "📷 Escáner",
+                "btn_show_scanner": "Mostrar Escáner",
+                "scanner_desc": "Toma una foto.",
+                "btn_extract": "Extraer",
+                "btn_ai_fill": "✨ IA Autocompletar",
+                "add_exp_title": "💳 Añadir / Editar",
+                "lbl_date": "Fecha",
+                "lbl_desc": "Descripción",
+                "lbl_cat": "Categoría",
+                "lbl_who": "Quién pagó?",
+                "lbl_split": "Tipo de división",
+                "opt_shared": "Compartido",
+                "opt_personal": "Personal",
+                "lbl_for_whom": "Para quién?",
+                "btn_add_server": "Añadir",
+                "charts_title": "📈 Gastos Totales",
+                "btn_show_charts": "Mostrar Gráficos",
+                "log_title": "📋 Registro de Gastos",
+                "btn_show_logs": "Mostrar Actividad",
+                "sort_new": "Más recientes",
+                "sort_old": "Más antiguos",
+                "sort_high": "Mayor importe",
+                "sort_low": "Menor importe",
+                "btn_dl_txt": "📄 Descargar Reporte",
+                "export_title": "📊 Exportar Datos",
+                "btn_dl_csv": "Exportar Excel (CSV)"
+            }
+        };
+
+        let currentLang = "it";
+
+        /**
+         * ============================================================================
+         * FUNCTION: toggleLanguage
+         * DESCRIPTION: Switches the application language between IT, EN, ES.
+         * ============================================================================
+         */
+        /**
+         * ============================================================================
+         * FUNCTION: shareCurrentTrip
+         * DESCRIPTION: Creates a shareable link containing the trip code and shares
+         * it using the native device share menu, with a clipboard fallback.
+         * ============================================================================
+         */
+        async function shareCurrentTrip() 
+        {
+            if (!currentTripCode) 
+            {
+                showToast("Apri prima un viaggio da condividere", "error");
+                return;
+            }
+
+            const cleanCode = String(currentTripCode).trim().toUpperCase();
+            const baseUrl = window.location.origin + window.location.pathname;
+            const shareUrl = baseUrl + "?trip=" + encodeURIComponent(cleanCode);
+            const shareText = "Ti invito al viaggio \"" + (currentTripName || "Condivisione viaggio") + "\".\n" +
+                "Codice del viaggio: " + cleanCode;
+
+            try 
+            {
+                if (navigator.share) 
+                {
+                    await navigator.share({
+                        title: currentTripName || "Viaggio condiviso",
+                        text: shareText,
+                        url: shareUrl
+                    });
+                    showToast("Link condiviso", "success");
+                    return;
+                }
+
+                if (navigator.clipboard && window.isSecureContext) 
+                {
+                    await navigator.clipboard.writeText(shareText + "\n" + shareUrl);
+                    showToast("Messaggio e link copiati", "success");
+                    return;
+                }
+
+                const temp = document.createElement("textarea");
+                temp.value = shareText + "\n" + shareUrl;
+                temp.style.position = "fixed";
+                temp.style.opacity = "0";
+                document.body.appendChild(temp);
+                temp.focus();
+                temp.select();
+                document.execCommand("copy");
+                document.body.removeChild(temp);
+                showToast("Messaggio e link copiati", "success");
+            } 
+            catch(e) 
+            {
+                if (e && e.name === "AbortError") 
+                {
+                    return;
+                }
+                showToast("Impossibile condividere il viaggio", "error");
+            }
+        }
+
+        function toggleLanguage() 
+        {
+            if (currentLang === "it") 
+            {
+                currentLang = "en";
+                document.getElementById('lang-indicator').innerText = "🇬🇧";
+            } 
+            else if (currentLang === "en") 
+            {
+                currentLang = "es";
+                document.getElementById('lang-indicator').innerText = "🇪🇸";
+            } 
+            else 
+            {
+                currentLang = "it";
+                document.getElementById('lang-indicator').innerText = "🇮🇹";
+            }
+            
+            try 
+            { 
+                localStorage.setItem(
+                    'app_lang', 
+                    currentLang
+                ); 
+            } 
+            catch(e) 
+            {
+                console.log("Errore localStorage lang");
+            }
+            
+            applyTranslations();
+            
+            if (currentTripCode) 
+            {
+                updateUI();
+            }
+        }
+
+        /**
+         * ============================================================================
+         * FUNCTION: applyTranslations
+         * DESCRIPTION: Iterates over all elements with 'data-i18n' and applies the
+         * correct string based on the selected language.
+         * ============================================================================
+         */
+        function applyTranslations() 
+        {
+            const dict = i18n[currentLang];
+            const elementsToTranslate = document.querySelectorAll('[data-i18n]');
+            
+            elementsToTranslate.forEach(function(el) 
+            {
+                const key = el.getAttribute('data-i18n');
+                
+                if (dict[key]) 
+                {
+                    if (
+                        el.tagName === 'INPUT' || 
+                        el.tagName === 'TEXTAREA'
+                    ) 
+                    {
+                        el.placeholder = dict[key];
+                    } 
+                    else 
+                    {
+                        el.innerText = dict[key];
+                    }
+                }
+            });
+        }
+        
+        try 
+        {
+            const savedLang = localStorage.getItem('app_lang');
+            
+            if (savedLang) 
+            {
+                currentLang = savedLang;
+                
+                if (currentLang === "en") 
+                {
+                    document.getElementById('lang-indicator').innerText = "🇬🇧";
+                }
+                
+                if (currentLang === "es") 
+                {
+                    document.getElementById('lang-indicator').innerText = "🇪🇸";
+                }
+            }
+        } 
+        catch(e) 
+        {
+            console.log("Nessuna lingua salvata trovata");
+        }
+
+        /**
+         * ============================================================================
+         * EVENT: DOMContentLoaded
+         * DESCRIPTION: Fires when the HTML document has been completely parsed.
+         * ============================================================================
+         */
+        window.addEventListener('DOMContentLoaded', function() 
+        { 
+            applyTranslations(); 
+            checkTutorial(); 
+
+            try 
+            {
+                const urlParams = new URLSearchParams(window.location.search);
+                const sharedCode = (urlParams.get("trip") || "").trim().toUpperCase();
+
+                if (/^[A-Z0-9]{6}$/.test(sharedCode)) 
+                {
+                    setTimeout(function() 
+                    {
+                        joinTripWithCode(sharedCode);
+                    }, 350);
+                }
+            } 
+            catch(e) 
+            {
+                console.log("Link di condivisione non valido");
+            }
+        });
+
+        /**
+         * ============================================================================
+         * FUNCTION: checkTutorial
+         * DESCRIPTION: Shows a welcome modal if the user opens the app for the first time.
+         * ============================================================================
+         */
+        function checkTutorial() 
+        {
+            try 
+            {
+                if (
+                    localStorage.getItem('tutorial_done') !== 'true'
+                ) 
+                {
+                    openModal(
+                        "App Tour!", 
+                        "1. Usa '+ Crea' per avviare un viaggio.\n2. Imposta la valuta.\n3. Aggiungi spese o scansiona scontrini.\n4. Condividi il codice in alto!", 
+                        false, 
+                        false, 
+                        "Iniziamo!", 
+                        "modal-btn-confirm", 
+                        function() 
+                        {
+                            localStorage.setItem('tutorial_done', 'true');
+                        }
+                    );
+                }
+            } 
+            catch(e) 
+            {
+                console.log("Errore lettura tutorial_done");
+            }
+        }
+
+        /* 
+           ============================================================================
+           MODULO: SISTEMA DI NOTIFICHE E FINESTRE MODALI (CON ANTI-FREEZE)
+           ============================================================================ 
+        */
+
+        /**
+         * ============================================================================
+         * FUNCTION: showToast
+         * DESCRIPTION: Creates and displays a non-blocking toast notification.
+         * ============================================================================
+         */
+        function showToast(
+            message, 
+            type
+        ) 
+        {
+            const container = document.getElementById('toast-container');
+            
+            if (!container) 
+            {
+                return;
+            }
+            
+            const toast = document.createElement('div');
+            
+            toast.className = 'toast ' + type;
+            toast.innerText = message;
+            
+            container.appendChild(toast);
+            
+            setTimeout(function() 
+            {
+                toast.style.opacity = '0';
+                
+                setTimeout(function() 
+                { 
+                    if (container.contains(toast)) 
+                    {
+                        container.removeChild(toast); 
+                    }
+                }, 400);
+                
+            }, 3000);
+        }
+
+        let loadingTimeout;
+        
+        /**
+         * ============================================================================
+         * FUNCTION: showLoading
+         * DESCRIPTION: Shows or hides the loading overlay. Includes an automatic
+         * fail-safe timeout (6 seconds) to prevent the UI from freezing permanently.
+         * ============================================================================
+         */
+        function showLoading(
+            show, 
+            text
+        ) 
+        {
+            const overlay = document.getElementById('loading-overlay');
+            const textEl = document.getElementById('loading-text');
+            
+            if (!overlay) 
+            {
+                return;
+            }
+            
+            clearTimeout(loadingTimeout);
+            
+            if (show) 
+            {
+                if (textEl && text) 
+                {
+                    textEl.innerText = text;
+                }
+                
+                overlay.style.display = 'flex';
+                
+                // SISTEMA ANTI-FREEZE: Sblocca sempre i pulsanti dopo 6 secondi
+                loadingTimeout = setTimeout(function() 
+                { 
+                    overlay.style.display = 'none'; 
+                }, 6000);
+            } 
+            else 
+            {
+                overlay.style.display = 'none';
+            }
+        }
+
+        let modalCallback = null;
+        
+        /**
+         * ============================================================================
+         * FUNCTION: closeModal
+         * DESCRIPTION: Hides the custom modal and resets the callback function.
+         * ============================================================================
+         */
+        function closeModal() 
+        {
+            const modal = document.getElementById('custom-modal');
+            
+            if (modal) 
+            {
+                modal.style.display = 'none';
+            }
+            
+            modalCallback = null;
+        }
+
+        /**
+         * ============================================================================
+         * FUNCTION: openModal
+         * DESCRIPTION: Displays a customizable modal dialog for alerts and inputs.
+         * ============================================================================
+         */
+        function openModal(
+            title, 
+            msg, 
+            isInput, 
+            isCur, 
+            confirmText, 
+            btnClass, 
+            callback
+        ) 
+        {
+            const modal = document.getElementById('custom-modal');
+            
+            if (!modal) 
+            {
+                return;
+            }
+            
+            const titleEl = document.getElementById('modal-title');
+            const messageEl = document.getElementById('modal-message');
+            const inputEl = document.getElementById('modal-input');
+            const curEl = document.getElementById('modal-select-currency');
+            const btn = document.getElementById('modal-btn-confirm');
+            
+            titleEl.innerText = title;
+            messageEl.innerText = msg;
+            
+            btn.innerText = confirmText; 
+            btn.className = btnClass;
+            
+            if (isInput) 
+            {
+                inputEl.style.display = 'block';
+                inputEl.value = ''; 
+                inputEl.focus();
+            } 
+            else 
+            {
+                inputEl.style.display = 'none';
+            }
+            
+            if (isCur) 
+            {
+                curEl.style.display = 'block';
+            } 
+            else 
+            {
+                curEl.style.display = 'none';
+            }
+            
+            modalCallback = callback;
+            
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+
+            newBtn.addEventListener('click', function() 
+            {
+                let res = null;
+                
+                if (isInput) 
+                {
+                    res = document.getElementById('modal-input').value;
+                    
+                    if (isCur) 
+                    {
+                        res = { 
+                            name: res, 
+                            currency: document.getElementById('modal-select-currency').value 
+                        };
+                    }
+                } 
+                else 
+                {
+                    res = true;
+                }
+                
+                const action = modalCallback;
+                
+                closeModal();
+                
+                if (action) 
+                {
+                    action(res);
+                }
+            });
+            
+            modal.style.display = 'flex';
+        }
+
+        /**
+         * ============================================================================
+         * FUNCTION: toggleDarkMode
+         * DESCRIPTION: Toggles the CSS dark mode class on the HTML element.
+         * ============================================================================
+         */
+        function toggleDarkMode() 
+        {
+            document.documentElement.classList.toggle('dark-mode');
+            
+            try 
+            { 
+                localStorage.setItem(
+                    'dark_mode', 
+                    document.documentElement.classList.contains('dark-mode')
+                ); 
+            } 
+            catch(e) 
+            {
+                console.log("Errore salvataggio dark mode");
+            }
+        }
+
+        /* 
+           ============================================================================
+           MODULO: FIREBASE, VARIABILI GLOBALI E INIZIALIZZAZIONE
+           ============================================================================ 
+        */
+        
+        const firebaseConfig = 
+        {
+          apiKey: "AIzaSyBwzyCQO5RP1TCLSvNljCMpf0ltczBZ8uk",
+          authDomain: "segna-spese-viaggio.firebaseapp.com",
+          projectId: "segna-spese-viaggio",
+          storageBucket: "segna-spese-viaggio.firebasestorage.app",
+          messagingSenderId: "877321090341",
+          appId: "1:877321090341:web:dbc2a4540f7c606679d6cc"
+        };
+        
+        if (!firebase.apps.length) 
+        {
+            firebase.initializeApp(firebaseConfig);
+        }
+        
+        const db = firebase.firestore();
+
+        let expenses = []; 
+        let participants = []; 
+        let customCategories = []; 
+        let tripLogs = []; 
+        let chartInstances = {};
+        let tripBudget = 0; 
+        let tripItinerary = ""; 
+        let globalCurrency = "€"; 
+        let currentTripCode = null; 
+        let currentTripName = ""; 
+        let unsubscribe = null; 
+        let editingExpenseIndex = -1; 
+        let isAdmin = false;
+        
+        const chartColors = [
+            '#ff9500', 
+            '#34c759', 
+            '#007aff', 
+            '#af52de', 
+            '#ff3b30', 
+            '#5856d6', 
+            '#ff2d55', 
+            '#5ac8fa'
+        ];
+        
+        try 
+        { 
+            currentTripCode = localStorage.getItem('shared_trip_code'); 
+        } 
+        catch(e) 
+        {
+            console.log("Accesso negato alla localstorage");
+        }
+        
+        let recentTrips = [];
+        try 
+        { 
+            const storedRecents = localStorage.getItem('recent_trips');
+            if (storedRecents) 
+            {
+                recentTrips = JSON.parse(storedRecents);
+            } 
+            else 
+            {
+                recentTrips = [];
+            }
+        } 
+        catch (e) 
+        { 
+            recentTrips = []; 
+        }
+
+        const dateInput = document.getElementById('date');
+        if (dateInput) 
+        {
+            dateInput.valueAsDate = new Date();
+        }
+
+        /* 
+           ============================================================================
+           MODULO: RECENSIONI (FIREBASE) E MODALITA' ADMIN
+           ============================================================================ 
+        */
+        
+        /**
+         * ============================================================================
+         * FUNCTION: promptAdmin
+         * DESCRIPTION: Asks for a password to enable administrator privileges.
+         * ============================================================================
+         */
+        function promptAdmin() 
+        {
+            if (isAdmin) 
+            { 
+                isAdmin = false; 
+                showToast("Admin OFF", "success"); 
+                initReviewsListener(); 
+                return; 
+            }
+            
+            openModal(
+                "Admin", 
+                "Password:", 
+                true, 
+                false, 
+                "Accedi", 
+                "modal-btn-confirm", 
+                function(pwd) 
+                {
+                    if (pwd === "Passaparola2026") 
+                    { 
+                        isAdmin = true; 
+                        showToast("Admin ON", "success"); 
+                        initReviewsListener(); 
+                    }
+                    else if (pwd) 
+                    {
+                        showToast("Password errata", "error");
+                    }
+                }
+            );
+        }
+
+        /**
+         * ============================================================================
+         * FUNCTION: deleteReview
+         * DESCRIPTION: Deletes a specific review document from Firebase.
+         * ============================================================================
+         */
+        function deleteReview(docId) 
+        {
+            openModal(
+                "Attenzione", 
+                "Eliminare la recensione?", 
+                false, 
+                false, 
+                "Elimina", 
+                "modal-btn-danger", 
+                function(conf) 
+                {
+                    if (conf) 
+                    {
+                        db.collection("app_reviews")
+                          .doc(docId)
+                          .delete()
+                          .then(function() 
+                          {
+                              showToast("Eliminata", "success");
+                          });
+                    }
+                }
+            );
+        }
+
+        /**
+         * ============================================================================
+         * FUNCTION: initReviewsListener
+         * DESCRIPTION: Subscribes to Firebase to fetch all reviews in real-time.
+         * ============================================================================
+         */
+        let reviewsUnsubscribe = null;
+        
+        function initReviewsListener() 
+        {
+            if (reviewsUnsubscribe) 
+            {
+                reviewsUnsubscribe();
+            }
+            
+            reviewsUnsubscribe = db.collection("app_reviews")
+                                   .orderBy("timestamp", "desc")
+                                   .onSnapshot(function(snap) 
+            {
+                const list = document.getElementById('reviews-list-container');
+                if (!list) 
+                {
+                    return;
+                }
+                
+                if (snap.empty) 
+                { 
+                    list.innerHTML = '<p style="text-align:center;color:#666;">Nessuna recensione</p>'; 
+                    return; 
+                }
+                
+                let html = "";
+                
+                snap.forEach(function(doc) 
+                {
+                    const data = doc.data();
+                    
+                    let stars = "";
+                    for (let i = 0; i < (data.rating || 5); i++) 
+                    {
+                        stars += "⭐";
+                    }
+                    
+                    let dateStr = "";
+                    if (data.timestamp) 
+                    {
+                        dateStr = data.timestamp.toDate().toLocaleDateString('it-IT');
+                    }
+                    
+                    html += '<div class="review-box" style="position:relative;">';
+                    
+                    if (isAdmin) 
+                    {
+                        html += '<button onclick="deleteReview(\'' + doc.id + '\')" style="position:absolute;top:10px;right:10px;width:auto;padding:5px 10px;margin:0;background:#ff3b30;font-size:0.8em;border-radius:6px;">🗑️</button>';
+                    }
+                    
+                    html += '<strong>' + data.author + '</strong> - ' + stars + '<br>';
+                    html += '<small style="color:#8e8e93;">' + dateStr + '</small>';
+                    html += '<p style="margin-top:8px;margin-bottom:0;">' + data.text + '</p>';
+                    html += '</div>';
+                });
+                
+                list.innerHTML = html;
+            });
+        }
+
+        /**
+         * ============================================================================
+         * FUNCTION: submitReview
+         * DESCRIPTION: Saves a new user review to Firebase.
+         * ============================================================================
+         */
+        function submitReview() 
+        {
+            const nameInput = document.getElementById('review-name');
+            const textInput = document.getElementById('review-text');
+            const ratingInput = document.getElementById('review-rating');
+            
+            if (!nameInput || !textInput || !ratingInput) 
+            {
+                return;
+            }
+            
+            const n = nameInput.value.trim();
+            const t = textInput.value.trim();
+            const r = parseInt(ratingInput.value);
+            
+            if (!n || !t) 
+            { 
+                showToast("Compila tutto!", "error"); 
+                return; 
+            }
+            
+            showLoading(true, "Invio in corso...");
+            
+            db.collection("app_reviews").add({ 
+                author: n, 
+                text: t, 
+                rating: r, 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            })
+            .then(function() 
+            { 
+                showLoading(false); 
+                nameInput.value = ""; 
+                textInput.value = ""; 
+                showToast("Recensione Inviata!", "success"); 
+            })
+            .catch(function() 
+            { 
+                showLoading(false); 
+                showToast("Errore di rete", "error"); 
+            });
+        }
+        
+        initReviewsListener();
+
+        /* 
+           ============================================================================
+           MODULO: GESTIONE VIAGGI (CREAZIONE, CONNESSIONE, MEMORIA LOCALE)
+           ============================================================================ 
+        */
+
+        function updateRecentTripsUI() 
+        {
+            const c = document.getElementById('recent-trips-container');
+            const s = document.getElementById('recent-trips-selector');
+            
+            if (!c || !s) 
+            {
+                return;
+            }
+            
+            if (recentTrips.length > 0) 
+            {
+                c.style.display = 'flex'; 
+                s.innerHTML = '<option value="">Viaggi salvati...</option>';
+                
+                recentTrips.forEach(function(t) 
+                { 
+                    let sel = (t.code === currentTripCode) ? 'selected' : '';
+                    s.innerHTML += '<option value="' + t.code + '" ' + sel + '>🏕️ ' + t.name + ' (' + t.code + ')</option>'; 
+                });
+            } 
+            else 
+            { 
+                c.style.display = 'none'; 
+            }
+        }
+
+        function saveRecentTrip(
+            code, 
+            name
+        ) 
+        {
+            const idx = recentTrips.findIndex(function(t) 
+            {
+                return t.code === code;
+            });
+            
+            if (idx > -1) 
+            {
+                recentTrips[idx].name = name; 
+            }
+            else 
+            {
+                recentTrips.push({
+                    code: code, 
+                    name: name
+                });
+            }
+            
+            try 
+            { 
+                localStorage.setItem(
+                    'recent_trips', 
+                    JSON.stringify(recentTrips)
+                ); 
+            } 
+            catch(e) 
+            {
+                console.log("Errore localStorage");
+            } 
+            
+            updateRecentTripsUI();
+        }
+
+        function goHome() 
+        {
+            if (unsubscribe) 
+            {
+                unsubscribe();
+            }
+            
+            currentTripCode = null; 
+            globalCurrency = "€";
+            
+            try 
+            { 
+                localStorage.removeItem('shared_trip_code'); 
+            } 
+            catch(e) 
+            {
+                console.log("Errore localStorage");
+            }
+            
+            const w = document.getElementById('welcome-message');
+            if (w) w.style.display = 'block';
+            
+            const a = document.getElementById('app-content');
+            if (a) a.style.display = 'none';
+            
+            const t = document.getElementById('trip-title');
+            if (t) t.innerText = 'Nessun Viaggio';
+            
+            const s = document.getElementById('recent-trips-selector');
+            if (s) s.value = "";
+        }
+
+        function switchTrip() 
+        {
+            const selector = document.getElementById('recent-trips-selector');
+            if (!selector) return;
+            
+            const val = selector.value;
+            
+            if (val && val !== currentTripCode) 
+            {
+                joinTripWithCode(val);
+            } 
+            else if (!val) 
+            {
+                goHome();
+            }
+        }
+
+        function promptRemoveHistory() 
+        {
+            const s = document.getElementById('recent-trips-selector');
+            let code = currentTripCode;
+            
+            if (s && s.value) 
+            {
+                code = s.value;
+            }
+            
+            if (!code) 
+            { 
+                showToast("Seleziona viaggio", "error"); 
+                return; 
+            }
+            
+            openModal(
+                "Rimuovi", 
+                "Rimuovere dalla memoria locale?", 
+                false, 
+                false, 
+                "Rimuovi", 
+                "modal-btn-danger", 
+                function(conf) 
+                {
+                    if (conf) 
+                    {
+                        recentTrips = recentTrips.filter(function(t) 
+                        {
+                            return t.code !== code;
+                        });
+                        
+                        try 
+                        { 
+                            localStorage.setItem(
+                                'recent_trips', 
+                                JSON.stringify(recentTrips)
+                            ); 
+                        } 
+                        catch(e) {}
+                        
+                        if (code === currentTripCode) 
+                        {
+                            goHome();
+                        }
+                        
+                        updateRecentTripsUI(); 
+                        showToast("Rimosso", "success");
+                    }
+                }
+            );
+        }
+        
+        updateRecentTripsUI();
+
+        /**
+         * ============================================================================
+         * FUNCTION: flowCreateTrip
+         * DESCRIPTION: Handles the creation flow of a new trip in Firebase.
+         * ============================================================================
+         */
+        function flowCreateTrip() 
+        {
+            openModal(
+                "Nuovo Viaggio", 
+                "Nome e valuta del viaggio:", 
+                true, 
+                true, 
+                "Crea", 
+                "modal-btn-confirm", 
+                async function(res) 
+                {
+                    if (res && res.name && res.name.trim()) 
+                    {
+                        showLoading(true, "Creazione...");
+                        
+                        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                        
+                        try 
+                        {
+                            await db.collection("trips").doc(code).set({
+                                name: res.name.trim(), 
+                                currency: res.currency, 
+                                budget: 0, 
+                                itineraryLink: "",
+                                logs: [
+                                    {
+                                        time: new Date().toLocaleString(), 
+                                        msg: "Viaggio Creato"
+                                    }
+                                ],
+                                participants: [
+                                    "Persona 1", 
+                                    "Persona 2"
+                                ],
+                                categories: [
+                                    "🍔 Cibo", 
+                                    "🛏️ Alloggio", 
+                                    "⛽ Benzina", 
+                                    "🏛️ Turismo", 
+                                    "✈️ Trasporti", 
+                                    "🅿️ Parcheggio", 
+                                    "🛍️ Altro"
+                                ], 
+                                expenses: []
+                            });
+                            
+                            showLoading(false); 
+                            showToast("Creato! Codice: " + code, "success"); 
+                            
+                            joinTripWithCode(code);
+                        } 
+                        catch (e) 
+                        { 
+                            showLoading(false); 
+                            showToast("Errore di connessione", "error"); 
+                        }
+                    }
+                }
+            );
+        }
+
+        function flowJoinTrip() 
+        {
+            openModal(
+                "Entra", 
+                "Codice segreto a 6 cifre:", 
+                true, 
+                false, 
+                "Entra", 
+                "modal-btn-confirm", 
+                function(code) 
+                {
+                    if (code) 
+                    {
+                        joinTripWithCode(code.trim().toUpperCase());
+                    }
+                }
+            );
+        }
+
+        function joinTripWithCode(code) 
+        {
+            if (unsubscribe) 
+            {
+                unsubscribe();
+            }
+            
+            showLoading(true, "Connessione...");
+            
+            unsubscribe = db.collection("trips").doc(code).onSnapshot(function(doc) 
+            {
+                showLoading(false);
+                
+                if (doc.exists) 
+                {
+                    currentTripCode = code;
+                    
+                    try 
+                    { 
+                        localStorage.setItem('shared_trip_code', code); 
+                    } 
+                    catch(e) {}
+                    
+                    const d = doc.data();
+                    expenses = d.expenses || []; 
+                    participants = d.participants || []; 
+                    customCategories = d.categories || [];
+                    currentTripName = d.name || "Viaggio"; 
+                    globalCurrency = d.currency || "€";
+                    tripBudget = d.budget || 0; 
+                    tripItinerary = d.itineraryLink || ""; 
+                    tripLogs = d.logs || [];
+                    
+                    const lblAmt = document.getElementById('lbl-amt');
+                    if (lblAmt) 
+                    {
+                        lblAmt.innerText = "Importo (" + globalCurrency + ")";
+                    }
+                    
+                    saveRecentTrip(code, currentTripName);
+                    
+                    const titleEl = document.getElementById('trip-title');
+                    if (titleEl) 
+                    {
+                        titleEl.innerText = currentTripName + " (" + code + ")";
+                    }
+                    
+                    const welcomeMsg = document.getElementById('welcome-message');
+                    if (welcomeMsg) 
+                    {
+                        welcomeMsg.style.display = 'none';
+                    }
+                    
+                    const appCont = document.getElementById('app-content');
+                    if (appCont) 
+                    {
+                        appCont.style.display = 'block';
+                    }
+                    
+                    updateUI();
+                } 
+                else 
+                {
+                    showToast("Non trovato", "error"); 
+                    if (currentTripCode === code) 
+                    {
+                        goHome();
+                    }
+                }
+            }, function(err) 
+            { 
+                showLoading(false); 
+                showToast("Errore rete", "error"); 
+            });
+        }
+
+        function saveToFirebase() 
+        {
+            if (!currentTripCode) 
+            {
+                return;
+            }
+            
+            showLoading(true, "Salvataggio in corso...");
+            
+            db.collection("trips").doc(currentTripCode).update({
+                expenses: expenses, 
+                participants: participants, 
+                categories: customCategories, 
+                budget: tripBudget, 
+                itineraryLink: tripItinerary, 
+                logs: tripLogs
+            })
+            .then(function() 
+            { 
+                showLoading(false); 
+            })
+            .catch(function() 
+            { 
+                showLoading(false); 
+                showToast("Errore di salvataggio", "error"); 
+            });
+        }
+
+        /* 
+           ============================================================================
+           MODULO: FUNZIONI UI, LOG, BUDGET E PROGRAMMA
+           ============================================================================ 
+        */
+
+        function toggleSection(id)
+        {
+            let el = document.getElementById(id);
+
+            if (!el) return;
+
+            const hidden = el.style.display === 'none' ||
+                window.getComputedStyle(el).display === 'none';
+
+            if (hidden)
+            {
+                el.style.display = 'block';
+
+                if (id.indexOf('dettagli-user-') === 0)
+                {
+                    updateUI();
+                    el = document.getElementById(id);
+                    if (el) el.style.display = 'block';
+                }
+            }
+            else
+            {
+                el.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('click', function(event)
+        {
+            const btn = event.target.closest('[data-toggle-target]');
+            if (!btn) return;
+            event.preventDefault();
+            const targetId = btn.getAttribute('data-toggle-target');
+            if (targetId) toggleSection(targetId);
+        });
+
+        function toggleForWhom() 
+        { 
+            const s = document.getElementById('split');
+            const c = document.getElementById('for-whom-container'); 
+            
+            if (s && c) 
+            {
+                if (s.value === 'personal') 
+                {
+                    c.style.display = 'block';
+                }
+                else 
+                {
+                    c.style.display = 'none';
+                }
+            } 
+        }
+        
+        function addLog(msg) 
+        {
+            tripLogs.unshift({
+                time: new Date().toLocaleString(), 
+                msg: msg
+            });
+            
+            if (tripLogs.length > 30) 
+            {
+                tripLogs.pop();
+            }
+        }
+
+        function renderLogs() 
+        {
+            const c = document.getElementById('activity-log-list'); 
+            
+            if (!c) 
+            {
+                return;
+            }
+            
+            if (tripLogs.length === 0) 
+            { 
+                c.innerHTML = '<p style="text-align:center;color:#666;">Nessuna attività registrata</p>'; 
+                return; 
+            }
+            
+            let h = ''; 
+            
+            tripLogs.forEach(function(l) 
+            { 
+                h += '<div class="log-entry"><strong>[' + l.time + ']</strong> ' + l.msg + '</div>'; 
+            }); 
+            
+            c.innerHTML = h;
+        }
+
+        function saveBudget() 
+        {
+            const inputEl = document.getElementById('budget-input');
+            if (!inputEl) return;
+            
+            const v = parseFloat(inputEl.value);
+            
+            if (v > 0) 
+            { 
+                tripBudget = v; 
+                addLog("Budget massimo: " + v + globalCurrency); 
+                saveToFirebase(); 
+                showToast("Budget salvato!", "success"); 
+            }
+        }
+
+        function renderBudget(tot) 
+        {
+            const c = document.getElementById('budget-display-container');
+            const b = document.getElementById('budget-bar-fill');
+            const t = document.getElementById('budget-text');
+            
+            if (tripBudget > 0 && c && b && t) 
+            {
+                c.style.display = 'block'; 
+                let p = (tot / tripBudget) * 100;
+                
+                if (p > 100) 
+                { 
+                    p = 100; 
+                    b.style.backgroundColor = '#ff3b30'; 
+                    t.style.color = '#ff3b30'; 
+                }
+                else if (p > 80) 
+                { 
+                    b.style.backgroundColor = '#ff9500'; 
+                    t.style.color = '#ff9500'; 
+                }
+                else 
+                { 
+                    b.style.backgroundColor = '#34c759'; 
+                    t.style.color = '#666'; 
+                }
+                
+                b.style.width = p + '%'; 
+                t.innerText = "Speso: " + tot.toFixed(2) + globalCurrency + " su " + tripBudget + globalCurrency + " (" + p.toFixed(0) + "%)";
+            } 
+            else if (c) 
+            {
+                c.style.display = 'none';
+            }
+        }
+
+        function saveItinerary() 
+        {
+            const el = document.getElementById('itinerary-input');
+            if (!el) return;
+            
+            const v = el.value.trim();
+            
+            if (v !== "") 
+            { 
+                tripItinerary = v; 
+                addLog("Aggiunto programma di viaggio"); 
+                saveToFirebase(); 
+                showToast("Programma salvato", "success"); 
+            }
+        }
+
+        function renderItinerary() 
+        {
+            const b = document.getElementById('itinerary-btn-container');
+            
+            if (b) 
+            {
+                if (tripItinerary && tripItinerary !== "") 
+                {
+                    b.style.display = 'block';
+                }
+                else 
+                {
+                    b.style.display = 'none';
+                }
+            }
+        }
+
+        function openItinerary() 
+        { 
+            if (tripItinerary) 
+            {
+                window.open(tripItinerary, '_blank'); 
+            }
+        }
+
+        function renderParticipants() 
+        {
+            const l = document.getElementById('participants-list');
+            const w = document.getElementById('who');
+            const fw = document.getElementById('for-whom');
+            const fwFilt = document.getElementById('filter-who');
+            
+            if (!l || !w || !fw || !fwFilt) 
+            {
+                return;
+            }
+            
+            let curF = fwFilt.value; 
+            
+            l.innerHTML = ''; 
+            w.innerHTML = ''; 
+            fw.innerHTML = ''; 
+            fwFilt.innerHTML = '<option value="all">Tutti</option>';
+            
+            participants.forEach(function(p, i) 
+            {
+                l.innerHTML += '<div class="list-item"><strong>' + p + '</strong><button class="delete-btn" onclick="removeParticipant(' + i + ')">X</button></div>';
+                w.innerHTML += '<option value="' + p + '">' + p + '</option>'; 
+                fw.innerHTML += '<option value="' + p + '">' + p + '</option>'; 
+                fwFilt.innerHTML += '<option value="' + p + '">' + p + '</option>';
+            });
+            
+            if(participants.includes(curF)) 
+            {
+                fwFilt.value = curF;
+            }
+        }
+
+        function addParticipant() 
+        {
+            const el = document.getElementById('new-participant');
+            if (!el) return;
+            
+            const n = el.value.trim();
+            
+            if (n && !participants.includes(n)) 
+            { 
+                participants.push(n); 
+                el.value = ''; 
+                addLog("Aggiunto partecipante: " + n); 
+                saveToFirebase(); 
+                showToast("Aggiunto correttamente", "success"); 
+            }
+        }
+
+        function removeParticipant(i) 
+        {
+            if (participants.length <= 1) 
+            { 
+                showToast("Devi mantenere almeno 1 partecipante", "error"); 
+                return; 
+            }
+            
+            openModal(
+                "Attenzione", 
+                "Eliminare cancellerà in automatico le sue associazioni. Procedere?", 
+                false, 
+                false, 
+                "Elimina", 
+                "modal-btn-danger", 
+                function(c) 
+                {
+                    if (c) 
+                    { 
+                        addLog("Rimosso: " + participants[i]); 
+                        participants.splice(i, 1); 
+                        saveToFirebase(); 
+                        showToast("Rimosso", "success"); 
+                    }
+                }
+            );
+        }
+
+        function renderCategories() 
+        {
+            const l = document.getElementById('categories-list');
+            const c = document.getElementById('cat');
+            const fC = document.getElementById('filter-cat');
+            
+            if (!l || !c || !fC) 
+            {
+                return;
+            }
+            
+            let curF = fC.value; 
+            
+            l.innerHTML = ''; 
+            c.innerHTML = ''; 
+            fC.innerHTML = '<option value="all">Tutte le Categorie</option>';
+            
+            customCategories.forEach(function(cat, i) 
+            {
+                l.innerHTML += '<div class="list-item"><span>' + cat + '</span><button class="delete-btn" onclick="removeCategory(' + i + ')">X</button></div>';
+                c.innerHTML += '<option value="' + cat + '">' + cat + '</option>'; 
+                fC.innerHTML += '<option value="' + cat + '">' + cat + '</option>';
+            });
+            
+            if (customCategories.includes(curF)) 
+            {
+                fC.value = curF;
+            }
+        }
+
+        function addCategory() 
+        {
+            const el = document.getElementById('new-category');
+            if (!el) return;
+            
+            const n = el.value.trim();
+            
+            if (n && !customCategories.includes(n)) 
+            { 
+                customCategories.push(n); 
+                el.value = ''; 
+                addLog("Categoria aggiunta: " + n); 
+                saveToFirebase(); 
+                showToast("Aggiunta!", "success"); 
+            }
+        }
+
+        function removeCategory(i) 
+        {
+            if (customCategories.length <= 1) 
+            { 
+                showToast("Mantieni almeno 1 categoria", "error"); 
+                return; 
+            }
+            
+            openModal(
+                "Attenzione", 
+                "Eliminare questa categoria dalla lista?", 
+                false, 
+                false, 
+                "Elimina", 
+                "modal-btn-danger", 
+                function(c) 
+                {
+                    if (c) 
+                    { 
+                        addLog("Categoria rimossa: " + customCategories[i]); 
+                        customCategories.splice(i, 1); 
+                        saveToFirebase(); 
+                        showToast("Rimossa", "success"); 
+                    }
+                }
+            );
+        }
+
+        /* 
+           ============================================================================
+           MODULO: INTELLIGENZA ARTIFICIALE (AI) E SCANNER SCONTRINI OCR
+           ============================================================================ 
+        */
+
+        function scanReceipt() 
+        {
+            const f = document.getElementById('receipt-img');
+            const s = document.getElementById('scan-status');
+            const r = document.getElementById('scan-result');
+            const b = document.getElementById('start-scan-btn');
+            
+            if (!f || !f.files || !f.files.length) 
+            { 
+                showToast("Seleziona prima una foto dal dispositivo", "error"); 
+                return; 
+            }
+            
+            b.disabled = true; 
+            s.innerHTML = "⏳ Scansione del testo in corso..."; 
+            r.value = "";
+            
+            Tesseract.recognize(
+                f.files[0], 
+                'ita', 
+                { 
+                    logger: function(m) 
+                    { 
+                        if (m.status === 'recognizing text') 
+                        {
+                            let prog = Math.round(m.progress * 100);
+                            s.innerHTML = "Lettura AI: " + prog + "%"; 
+                        }
+                    }
+                }
+            )
+            .then(function(res) 
+            { 
+                s.innerHTML = "✅ Scansione Terminata!"; 
+                r.value = res.data.text; 
+                b.disabled = false; 
+                showToast("Testo estratto con successo", "success"); 
+            })
+            .catch(function(err) 
+            { 
+                s.innerHTML = "❌ Errore critico."; 
+                b.disabled = false; 
+                showToast("Impossibile leggere l'immagine", "error"); 
+            });
+        }
+
+        function autoFillWithAI() 
+        {
+            const el = document.getElementById('scan-result');
+            if (!el) return;
+            
+            const t = el.value;
+            
+            if (!t || !t.trim()) 
+            { 
+                showToast("Il campo di testo è vuoto", "error"); 
+                return; 
+            }
+            
+            let a = 0;
+            let d = "";
+            let desc = "Spesa Scannerizzata";
+            
+            const nm = t.match(/\d+[,\.]\d{2}/g);
+            
+            if (nm) 
+            { 
+                let mx = 0; 
+                
+                nm.forEach(function(m) 
+                { 
+                    let v = parseFloat(m.replace(',', '.')); 
+                    
+                    if (v > mx && v < 10000) 
+                    {
+                        mx = v;
+                    }
+                }); 
+                
+                a = mx; 
+            }
+            
+            const dm = t.match(/(\d{2})[\/\-](\d{2})[\/\-](\d{4})/);
+            
+            if (dm) 
+            {
+                d = dm[3] + "-" + dm[2] + "-" + dm[1];
+            }
+            
+            const l = t.split('\n');
+            
+            for (let i = 0; i < l.length; i++) 
+            { 
+                let ln = l[i].trim(); 
+                
+                if (
+                    ln.length > 3 && 
+                    !ln.match(/^[0-9]/) && 
+                    !ln.toLowerCase().includes('totale')
+                ) 
+                { 
+                    desc = ln.substring(0, 30); 
+                    break; 
+                } 
+            }
+            
+            const amtEl = document.getElementById('amt');
+            if (amtEl && a > 0) 
+            {
+                amtEl.value = a;
+            }
+            
+            const dateEl = document.getElementById('date');
+            if (dateEl && d) 
+            {
+                dateEl.value = d;
+            }
+            
+            const descEl = document.getElementById('desc');
+            if (descEl)
+            {
+                descEl.value = desc;
+            }
+            
+            const sect = document.getElementById('sezione-aggiungi-spesa');
+            if (sect)
+            {
+                sect.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            showToast("Il modulo è stato compilato dall'AI", "success");
+        }
+
+        /* 
+           ============================================================================
+           MODULO: ELABORAZIONE UI COMPLESSA (FILTRI, RENDER LISTE, BILANCI)
+           ============================================================================ 
+        */
+
+        function updateUI() 
+        {
+            renderParticipants(); 
+            renderCategories(); 
+            renderItinerary(); 
+            renderLogs();
+            
+            const uSect = document.getElementById('dynamic-user-sections');
+            if (uSect) uSect.innerHTML = '';
+            
+            participants.forEach(function(p, i) 
+            {
+                let st = 'none';
+                const eU = document.getElementById('dettagli-user-' + i);
+                
+                if (eU) 
+                {
+                    st = eU.style.display;
+                }
+                
+                let sn = p.replace(/'/g, "\\'");
+                
+                let htmlBlock = '<div class="card card-user">';
+                htmlBlock += '<h2>Spese Personali di ' + p + '</h2>';
+                htmlBlock += '<button type="button" class="toggle-btn" data-toggle-target="dettagli-user-' + i + '">Mostra Grafici / Dettagli</button>';
+                htmlBlock += '<div id="dettagli-user-' + i + '" style="display:' + st + '; margin-top:15px;">';
+                htmlBlock += '<div class="chart-container"><canvas id="pieChart-' + i + '"></canvas></div>';
+                htmlBlock += '<div class="chart-container" style="margin-top:30px;"><canvas id="barChart-' + i + '"></canvas></div>';
+                htmlBlock += '<h3 style="margin-top:25px;">Registro Delle Quote:</h3>';
+                htmlBlock += '<div id="lista-user-' + i + '"></div>';
+                htmlBlock += '</div>';
+                htmlBlock += '<button class="user-excel-btn" onclick="exportUserExcel(\'' + sn + '\')">🟢 Scarica in Excel le spese di ' + p + '</button>';
+                htmlBlock += '</div>';
+                
+                if (uSect) 
+                {
+                    uSect.innerHTML += htmlBlock;
+                }
+            });
+            
+            let bal = {}; 
+            let totP = {}; 
+            let uCat = {}; 
+            let uList = {}; 
+            let catTot = {}; 
+            let gTot = 0;
+            
+            participants.forEach(function(p) 
+            { 
+                bal[p] = 0; 
+                totP[p] = 0; 
+                uCat[p] = {}; 
+                uList[p] = ''; 
+            });
+            
+            const listDiv = document.getElementById('expense-list'); 
+            if (listDiv) listDiv.innerHTML = '';
+            
+            const fwEl = document.getElementById('filter-who');
+            let fW = fwEl ? fwEl.value : 'all';
+            
+            const fcEl = document.getElementById('filter-cat');
+            let fC = fcEl ? fcEl.value : 'all';
+            
+            const soEl = document.getElementById('sort-by');
+            let sO = soEl ? soEl.value : 'date-desc';
+            
+            let dispExp = [...expenses].filter(function(e) 
+            {
+                if (fW !== 'all' && e.who !== fW) return false;
+                if (fC !== 'all' && e.cat !== fC) return false;
+                return true;
+            });
+            
+            dispExp.sort(function(a, b) 
+            {
+                if (sO === 'date-desc') 
+                {
+                    return new Date(b.date || 0) - new Date(a.date || 0);
+                }
+                if (sO === 'date-asc') 
+                {
+                    return new Date(a.date || 0) - new Date(b.date || 0);
+                }
+                if (sO === 'amt-desc') 
+                {
+                    return b.amt - a.amt;
+                }
+                return a.amt - b.amt;
+            });
+
+            expenses.forEach(function(e) 
+            {
+                gTot += e.amt; 
+                let cc = e.cat; 
+                
+                if (catTot[cc]) 
+                {
+                    catTot[cc] += e.amt;
+                }
+                else 
+                {
+                    catTot[cc] = e.amt;
+                }
+                
+                if (totP[e.who] !== undefined) 
+                {
+                    totP[e.who] += e.amt;
+                }
+                
+                let spl = 0;
+                if (e.split === 'shared') 
+                {
+                    spl = e.amt / participants.length;
+                }
+                
+                let ben = e.forWhom || e.who;
+                
+                participants.forEach(function(p) 
+                {
+                    let q = 0;
+                    if (e.split === 'shared') 
+                    {
+                        q = spl;
+                    }
+                    else if (ben === p) 
+                    {
+                        q = e.amt;
+                    }
+                    
+                    bal[p] += q;
+                    
+                    if (q > 0) 
+                    { 
+                        if (uCat[p][cc]) 
+                        {
+                            uCat[p][cc] += q;
+                        }
+                        else 
+                        {
+                            uCat[p][cc] = q;
+                        }
+                        
+                        let dtStr = e.date || '';
+                        let decQ = q.toFixed(2);
+                        
+                        uList[p] += '<div class="category-row"><span>' + dtStr + ' ' + e.desc + ' <small>(' + cc + ')</small></span> <strong>' + decQ + globalCurrency + '</strong></div>'; 
+                    }
+                });
+            });
+
+            renderBudget(gTot);
+            
+            if (dispExp.length === 0 && listDiv) 
+            {
+                listDiv.innerHTML = '<p style="text-align:center;color:#666;">Nessuna spesa corrisponde ai filtri selezionati.</p>';
+            }
+            
+            dispExp.forEach(function(e) 
+            {
+                let pB = "";
+                if (e.split === 'personal') 
+                {
+                    pB = '<br><span style="color:#ff3b30;font-size:0.9em;">[' + (e.forWhom || e.who) + ']</span>';
+                }
+                
+                let idx = expenses.indexOf(e);
+                let htmlBlock = '<div class="expense-item">';
+                htmlBlock += '<div><strong>' + e.desc + '</strong> (' + e.cat + ')<br>';
+                
+                let dtStr = e.date || 'N/D';
+                let amtStr = e.amt.toFixed(2);
+                
+                htmlBlock += '<small>' + dtStr + ' | Pagato da: <strong>' + e.who + '</strong> ' + amtStr + globalCurrency + ' ' + pB + '</small></div>';
+                htmlBlock += '<div class="expense-actions">';
+                htmlBlock += '<button class="edit-btn" onclick="editExpense(' + idx + ')">✏️ Modifica</button>';
+                htmlBlock += '<button class="delete-btn" onclick="deleteExpense(' + idx + ')">🗑️ Elimina</button>';
+                htmlBlock += '</div></div>';
+                
+                if (listDiv)
+                {
+                    listDiv.innerHTML += htmlBlock;
+                }
+            });
+
+            let bHTML = '';
+            
+            participants.forEach(function(p) 
+            {
+                let net = totP[p] - bal[p];
+                
+                let tStr = totP[p].toFixed(2);
+                let bStr = bal[p].toFixed(2);
+                
+                bHTML += '<div style="padding:12px;border-radius:10px;margin-bottom:12px;" class="balance-gray">';
+                bHTML += '<p style="margin:0;"><strong>' + p + '</strong> ha anticipato alla cassa: ' + tStr + globalCurrency + '<br>';
+                bHTML += '<span style="font-size:0.85em;color:#666;">(La sua quota reale di spesa è: ' + bStr + globalCurrency + ')</span></p>';
+                
+                if (net < -0.01) 
+                {
+                    let oweStr = Math.abs(net).toFixed(2);
+                    bHTML += '<div class="balance-red" style="background:#ffebe9;color:#ff3b30;padding:8px;border-radius:6px;margin-top:8px;text-align:center;"><strong>⬇️ Deve restituire al gruppo: ' + oweStr + globalCurrency + '</strong></div>';
+                }
+                else if (net > 0.01) 
+                {
+                    let getStr = net.toFixed(2);
+                    bHTML += '<div class="balance-green" style="background:#e8f8ec;color:#28a745;padding:8px;border-radius:6px;margin-top:8px;text-align:center;"><strong>⬆️ Deve ricevere in dietro: ' + getStr + globalCurrency + '</strong></div>';
+                }
+                else 
+                {
+                    bHTML += '<div class="balance-gray" style="background:#f2f2f7;color:#666;padding:8px;border-radius:6px;margin-top:8px;text-align:center;"><strong>È in pari con tutti.</strong></div>';
+                }
+                
+                bHTML += '</div>';
+            });
+            
+            const sumEl = document.getElementById('balance-summary');
+            if (sumEl) sumEl.innerHTML = bHTML;
+
+            let cHTML = ''; 
+            let cL = []; 
+            let cD = [];
+            
+            for (let c in catTot) 
+            { 
+                let v = catTot[c].toFixed(2); 
+                cHTML += '<div class="category-row"><span>' + c + '</span> <strong>' + v + globalCurrency + '</strong></div>'; 
+                cL.push(c); 
+                cD.push(v); 
+            }
+            
+            const catSumEl = document.getElementById('category-summary');
+            if (catSumEl) catSumEl.innerHTML = cHTML || '<p>Nessun dato</p>';
+
+            participants.forEach(function(p, i) 
+            { 
+                let e = document.getElementById('lista-user-' + i); 
+                if (e) 
+                {
+                    e.innerHTML = uList[p] || '<p>Nessuna spesa personale.</p>'; 
+                }
+            });
+            
+            updateCharts(cL, cD, uCat);
+        }
+
+        /* 
+           ============================================================================
+           MODULO: ELABORAZIONE GRAFICI E VISUALIZZAZIONE DATI
+           ============================================================================ 
+        */
+
+        function updateCharts(lbl, dat, uC) 
+        {
+            const chartKeys = Object.keys(chartInstances);
+            
+            chartKeys.forEach(function(k) 
+            {
+                try 
+                {
+                    chartInstances[k].destroy();
+                }
+                catch(e) {}
+            });
+            
+            chartInstances = {};
+            
+            let isDark = false;
+            if (document.documentElement.classList.contains('dark-mode'))
+            {
+                isDark = true;
+            }
+            
+            const tc = isDark ? '#f2f2f7' : '#666666';
+            
+            const dtEl = document.getElementById('dettagli-totali');
+            if (dtEl && dtEl.style.display !== 'none' && lbl.length > 0) 
+            {
+                const pc = document.getElementById('pieChart');
+                if (pc)
+                {
+                    chartInstances['pt'] = new Chart(pc.getContext('2d'), { 
+                        type: 'doughnut', 
+                        data: {
+                            labels: lbl,
+                            datasets: [{
+                                data: dat,
+                                backgroundColor: chartColors
+                            }]
+                        }, 
+                        options: {
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: tc
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+                
+                const bc = document.getElementById('barChart');
+                if (bc)
+                {
+                    chartInstances['bt'] = new Chart(bc.getContext('2d'), { 
+                        type: 'bar', 
+                        data: {
+                            labels: lbl,
+                            datasets: [{
+                                data: dat,
+                                backgroundColor: chartColors,
+                                borderRadius: 6
+                            }]
+                        }, 
+                        options: {
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                x: {
+                                    ticks: {
+                                        color: tc
+                                    }
+                                },
+                                y: {
+                                    ticks: {
+                                        color: tc
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+            
+            if (uC) 
+            {
+                participants.forEach(function(p, i) 
+                {
+                    const c = document.getElementById('dettagli-user-' + i);
+                    
+                    if (c && c.style.display !== 'none') 
+                    {
+                        const kLen = Object.keys(uC[p]).length;
+                        
+                        if (kLen > 0)
+                        {
+                            let uL = Object.keys(uC[p]);
+                            let uD = Object.values(uC[p]);
+                            
+                            const pcU = document.getElementById('pieChart-' + i);
+                            if (pcU)
+                            {
+                                chartInstances['p' + i] = new Chart(pcU.getContext('2d'), { 
+                                    type: 'doughnut', 
+                                    data: {
+                                        labels: uL,
+                                        datasets: [{
+                                            data: uD,
+                                            backgroundColor: chartColors
+                                        }]
+                                    }, 
+                                    options: {
+                                        plugins: {
+                                            legend: {
+                                                labels: {
+                                                    color: tc
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                            
+                            const bcU = document.getElementById('barChart-' + i);
+                            if (bcU)
+                            {
+                                chartInstances['b' + i] = new Chart(bcU.getContext('2d'), { 
+                                    type: 'bar', 
+                                    data: {
+                                        labels: uL,
+                                        datasets: [{
+                                            data: uD,
+                                            backgroundColor: chartColors,
+                                            borderRadius: 6
+                                        }]
+                                    }, 
+                                    options: {
+                                        plugins: {
+                                            legend: {
+                                                display: false
+                                            }
+                                        },
+                                        scales: {
+                                            x: {
+                                                ticks: {
+                                                    color: tc
+                                                }
+                                            },
+                                            y: {
+                                                ticks: {
+                                                    color: tc
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        /* 
+           ============================================================================
+           MODULO: FUNZIONI FORM SPESE
+           ============================================================================ 
+        */
+
+        window.editExpense = function(i) 
+        {
+            const e = expenses[i]; 
+            
+            const dateEl = document.getElementById('date');
+            if (dateEl) dateEl.value = e.date;
+            
+            const descEl = document.getElementById('desc');
+            if (descEl) descEl.value = e.desc; 
+            
+            const catEl = document.getElementById('cat');
+            if (catEl) catEl.value = e.cat;
+            
+            const whoEl = document.getElementById('who');
+            if (whoEl) whoEl.value = e.who; 
+            
+            const amtEl = document.getElementById('amt');
+            if (amtEl) amtEl.value = e.amt; 
+            
+            const splitEl = document.getElementById('split');
+            if (splitEl) splitEl.value = e.split;
+            
+            toggleForWhom(); 
+            
+            const fwEl = document.getElementById('for-whom');
+            if (fwEl) 
+            {
+                if (e.forWhom) fwEl.value = e.forWhom;
+                else fwEl.value = '';
+            }
+            
+            editingExpenseIndex = i;
+            
+            const btn = document.getElementById('submit-btn');
+            if (btn) 
+            {
+                btn.innerText = "Salva la tua Modifica"; 
+                btn.style.backgroundColor = "#007aff";
+            }
+            
+            const sec = document.getElementById('sezione-aggiungi-spesa');
+            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        const form = document.getElementById('expense-form');
+        
+        if (form) 
+        {
+            form.addEventListener('submit', function(e) 
+            {
+                e.preventDefault();
+                
+                const dEl = document.getElementById('date');
+                const descEl = document.getElementById('desc');
+                const catEl = document.getElementById('cat');
+                const whoEl = document.getElementById('who');
+                const amtEl = document.getElementById('amt');
+                const splEl = document.getElementById('split');
+                const fwEl = document.getElementById('for-whom');
+                
+                const d = { 
+                    date: dEl.value, 
+                    desc: descEl.value, 
+                    cat: catEl.value, 
+                    who: whoEl.value, 
+                    amt: parseFloat(amtEl.value), 
+                    split: splEl.value, 
+                    forWhom: fwEl.value 
+                };
+                
+                if (editingExpenseIndex > -1) 
+                { 
+                    expenses[editingExpenseIndex] = d; 
+                    editingExpenseIndex = -1; 
+                    
+                    const btn = document.getElementById('submit-btn');
+                    if (btn) 
+                    {
+                        btn.innerText = "Aggiungi al Database"; 
+                        btn.style.backgroundColor = "#ff9500"; 
+                    }
+                    
+                    addLog("Modifica registrata per: " + d.desc); 
+                    showToast("La modifica è stata salvata", "success"); 
+                }
+                else 
+                { 
+                    expenses.push(d); 
+                    addLog("Spesa aggiunta: " + d.desc); 
+                    showToast("L'importo è stato aggiunto", "success"); 
+                }
+                
+                const dt = d.date; 
+                this.reset(); 
+                
+                dEl.value = dt; 
+                splEl.value = 'shared'; 
+                
+                toggleForWhom(); 
+                saveToFirebase();
+            });
+        }
+
+        window.deleteExpense = function(i) 
+        {
+            openModal(
+                "Conferma Eliminazione", 
+                "Vuoi davvero eliminare definitivamente la voce?", 
+                false, 
+                false, 
+                "Elimina Definitivamente", 
+                "modal-btn-danger", 
+                function(c) 
+                {
+                    if (c) 
+                    { 
+                        const desc = expenses[i].desc;
+                        addLog("Azione: Eliminata " + desc); 
+                        
+                        expenses.splice(i, 1); 
+                        
+                        if (editingExpenseIndex === i)
+                        { 
+                            editingExpenseIndex = -1; 
+                            const f = document.getElementById('expense-form');
+                            if (f) f.reset(); 
+                            
+                            const b = document.getElementById('submit-btn');
+                            if (b) 
+                            {
+                                b.innerText = "Aggiungi Dati"; 
+                                b.style.backgroundColor = "#ff9500"; 
+                            }
+                        } 
+                        
+                        showToast("Eliminato dal server", "success"); 
+                        saveToFirebase(); 
+                    }
+                }
+            );
+        };
+
+        /* 
+           ============================================================================
+           MODULO: FUNZIONI DI ESPORTAZIONE REALI (EXCEL, CSV E TXT REINSERITE)
+           ============================================================================ 
+        */
+
+        /**
+         * ============================================================================
+         * FUNCTION: exportUserExcel
+         * DESCRIPTION: Generates and downloads a CSV file specific to one user.
+         * ============================================================================
+         */
+        function exportUserExcel(participantName) 
+        {
+            let csv = "ESTRATTO CONTO PERSONALE PER: " + participantName + "\n";
+            csv += "Viaggio Riferimento: " + currentTripName + " (ID: " + currentTripCode + ")\n\n";
+            csv += "Data;Descrizione;Categoria;Pagato Alla Cassa Da;Importo Totale Spesa;Modalita Divisione;Quota A Carico Di " + participantName + ";\n";
+
+            let tPaidByMe = 0; 
+            let tMyShare = 0; 
+            let myCats = {};
+
+            expenses.forEach(function(e) 
+            {
+                let dateStr = e.date || "Sconosciuta";
+                let cleanCat = e.cat;
+                if (cleanCat) 
+                {
+                    cleanCat = cleanCat.replace(/[^\x00-\x7F]/g, "").trim();
+                }
+                
+                let myQuota = 0;
+
+                if (e.split === 'shared') 
+                {
+                    myQuota = e.amt / participants.length;
+                } 
+                else if (e.split === 'personal') 
+                {
+                    let ben = e.forWhom || e.who;
+                    if (ben === participantName) 
+                    {
+                        myQuota = e.amt;
+                    }
+                }
+
+                if (e.who === participantName) 
+                {
+                    tPaidByMe += e.amt;
+                }
+                
+                tMyShare += myQuota;
+
+                if (myQuota > 0) 
+                {
+                    if (myCats[cleanCat]) 
+                    {
+                        myCats[cleanCat] += myQuota;
+                    } 
+                    else 
+                    {
+                        myCats[cleanCat] = myQuota;
+                    }
+                }
+
+                if (myQuota > 0 || e.who === participantName) 
+                {
+                    let qStr = myQuota.toFixed(2).replace('.', ',');
+                    let aStr = e.amt.toFixed(2).replace('.', ',');
+                    
+                    csv += dateStr + ";" + e.desc + ";" + cleanCat + ";" + e.who + ";" + aStr + " " + globalCurrency + ";" + e.split + ";" + qStr + " " + globalCurrency + ";\n";
+                }
+            });
+
+            let netBal = tPaidByMe - tMyShare;
+            
+            csv += "\nDATI PER GRAFICI E STATISTICHE;\nCategoria;Importo Speso;\n";
+            const keys = Object.keys(myCats);
+            for (let i = 0; i < keys.length; i++) 
+            {
+                let c = keys[i];
+                let val = myCats[c].toFixed(2).replace('.', ',');
+                csv += c + ";" + val + " " + globalCurrency + ";\n";
+            }
+
+            csv += "\nBILANCIO FINALE: " + participantName.toUpperCase() + ";\n";
+            
+            let tpStr = tPaidByMe.toFixed(2).replace('.', ',');
+            let tsStr = tMyShare.toFixed(2).replace('.', ',');
+            let nbStr = netBal.toFixed(2).replace('.', ',');
+            
+            csv += "Totale denari anticipati;" + tpStr + " " + globalCurrency + ";\n";
+            csv += "Quota di spesa spettante;" + tsStr + " " + globalCurrency + ";\n";
+            csv += "Risultato Dare/Avere;" + nbStr + " " + globalCurrency + ";\n";
+
+            let fileName = currentTripName.replace(/[^a-zA-Z0-9]/g, '_');
+            
+            const file = new File(
+                ["\uFEFF" + csv], 
+                "Estratto_" + participantName + "_" + fileName + ".csv", 
+                { type: "text/csv;charset=utf-8;" }
+            );
+            
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Estratto_" + participantName + "_" + fileName + ".csv");
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast("Download Excel completato", "success");
+        }
+
+        /**
+         * ============================================================================
+         * FUNCTION: exportCSV
+         * DESCRIPTION: Generates the master CSV sheet for the whole group.
+         * ============================================================================
+         */
+        function exportCSV() 
+        {
+            let csv = "Viaggio di gruppo: " + currentTripName + " (Codice Auth: " + currentTripCode + ")\n\nREGISTRO COMPLETO DELLE SPESE;\n";
+            csv += "Data Ufficiale;Oggetto;Reparto;Pagatore Iniziale;Costo Complessivo (" + globalCurrency + ");Metodo Divisione;Soggetto Riferimento;";
+            
+            participants.forEach(function(p) 
+            {
+                csv += "Quota " + p + ";";
+            });
+            csv += "\n";
+
+            let bal = {}; 
+            let totP = {};
+            
+            participants.forEach(function(p) 
+            {
+                bal[p] = 0;
+                totP[p] = 0;
+            });
+
+            expenses.forEach(function(e) 
+            {
+                let dStr = e.date || "Nessuna data";
+                let cCat = e.cat;
+                if (cCat) cCat = cCat.replace(/[^\x00-\x7F]/g, "").trim();
+                
+                let aStr = e.amt.toFixed(2).replace('.', ',');
+                let ben = "-";
+                
+                if (e.split === 'personal') 
+                {
+                    ben = e.forWhom || e.who;
+                }
+                
+                csv += dStr + ";" + e.desc + ";" + cCat + ";" + e.who + ";" + aStr + ";" + e.split + ";" + ben + ";";
+                
+                if (totP[e.who] !== undefined) 
+                {
+                    totP[e.who] += e.amt;
+                }
+
+                participants.forEach(function(p) 
+                {
+                    let q = 0;
+                    if (e.split === 'shared') 
+                    {
+                        q = e.amt / participants.length;
+                    } 
+                    else if (e.split === 'personal') 
+                    {
+                        let target = e.forWhom || e.who;
+                        if (target === p) q = e.amt;
+                    }
+                    bal[p] += q;
+                    csv += q.toFixed(2).replace('.', ',') + ";";
+                });
+                csv += "\n";
+            });
+
+            csv += "\nSOMMARIO INDIVIDUALE DEGLI UTENTI;\nIdentificativo;Anticipi Totali;Costi Reali;Differenziale Finale;\n";
+            
+            participants.forEach(function(p) 
+            {
+                let n = totP[p] - bal[p];
+                let t1 = totP[p].toFixed(2).replace('.', ',');
+                let t2 = bal[p].toFixed(2).replace('.', ',');
+                let t3 = n.toFixed(2).replace('.', ',');
+                
+                csv += p + ";" + t1 + " " + globalCurrency + ";" + t2 + " " + globalCurrency + ";" + t3 + " " + globalCurrency + ";\n";
+            });
+
+            let fName = currentTripName.replace(/[^a-zA-Z0-9]/g, '_');
+            
+            const file = new File(
+                ["\uFEFF" + csv], 
+                "Dati_Maestro_" + fName + ".csv", 
+                { type: "text/csv;charset=utf-8;" }
+            );
+            
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Dati_Maestro_" + fName + ".csv");
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast("Esportazione gruppo eseguita", "success");
+        }
+
+        /**
+         * ============================================================================
+         * FUNCTION: exportTXT
+         * DESCRIPTION: Generates a human-readable text document with the logs.
+         * ============================================================================
+         */
+        function exportTXT() 
+        {
+            let t = "========================================================\n";
+            t += " DOCUMENTO DEL VIAGGIO: " + currentTripName.toUpperCase() + "\n";
+            t += " PIN Auth: " + currentTripCode + "\n";
+            t += " Generato in data: " + new Date().toLocaleDateString('it-IT') + "\n";
+            t += "========================================================\n\n";
+
+            let b = {}; 
+            let tp = {}; 
+            let ul = {};
+            
+            participants.forEach(function(p) 
+            {
+                b[p] = 0;
+                tp[p] = 0;
+                ul[p] = [];
+            });
+
+            t += "--- CRONOLOGIA DELLE VOCI DI SPESA ---\n";
+            
+            expenses.forEach(function(e, i) 
+            {
+                let c = e.cat;
+                if (c) c = c.replace(/[^\x00-\x7F]/g, "").trim();
+                let d = e.date || 'Senza data';
+                
+                t += (i + 1) + ". [" + d + "] -> " + e.desc + " | Settore: " + c + " | Totale: " + e.amt.toFixed(2) + " " + globalCurrency + "\n";
+                
+                if (e.split === 'shared') 
+                {
+                    t += "    Saldo coperto da: " + e.who + " | Struttura: Comune\n";
+                } 
+                else 
+                {
+                    let tgt = e.forWhom || e.who;
+                    t += "    Saldo coperto da: " + e.who + " | Struttura: Ad uso di " + tgt + "\n";
+                }
+
+                if (tp[e.who] !== undefined) 
+                {
+                    tp[e.who] += e.amt;
+                }
+
+                participants.forEach(function(p) 
+                {
+                    let q = 0;
+                    if (e.split === 'shared') 
+                    {
+                        q = e.amt / participants.length;
+                    } 
+                    else if (e.split === 'personal') 
+                    {
+                        let tgt = e.forWhom || e.who;
+                        if (tgt === p) q = e.amt;
+                    }
+                    
+                    b[p] += q;
+                    
+                    if (q > 0) 
+                    {
+                        let ds = e.date || '';
+                        ul[p].push("   -> " + ds + " / " + e.desc + " : " + q.toFixed(2) + " " + globalCurrency);
+                    }
+                });
+            });
+
+            t += "\n========================================================\n ANALISI E POSIZIONE SINGOLI PARTECIPANTI\n========================================================\n\n";
+
+            participants.forEach(function(p) 
+            {
+                let n = tp[p] - b[p];
+                
+                t += ">> PROFILO: " + p.toUpperCase() + " <<\n";
+                t += "   - Somma versata come anticipo cassa: " + tp[p].toFixed(2) + " " + globalCurrency + "\n";
+                t += "   - Peso delle spese a lui spettanti: " + b[p].toFixed(2) + " " + globalCurrency + "\n";
+                
+                if (n < -0.01) 
+                {
+                    t += "   - CONCLUSIONE: [DEBITO] Deve consegnare " + Math.abs(n).toFixed(2) + " " + globalCurrency + "\n";
+                } 
+                else if (n > 0.01) 
+                {
+                    t += "   - CONCLUSIONE: [CREDITO] Deve prelevare " + n.toFixed(2) + " " + globalCurrency + "\n";
+                } 
+                else 
+                {
+                    t += "   - CONCLUSIONE: [PAREGGIO] Non ha debiti.\n";
+                }
+
+                t += "   Lista dei movimenti a carico:\n";
+                
+                if (ul[p].length > 0) 
+                {
+                    t += ul[p].join('\n') + '\n';
+                } 
+                else 
+                {
+                    t += "   (Lista movimenti vuota per questo profilo)\n";
+                }
+                
+                t += "--------------------------------------------------------\n\n";
+            });
+
+            let fN = currentTripName.replace(/[^a-zA-Z0-9]/g, '_');
+            
+            const file = new File(
+                ["\uFEFF" + t], 
+                "Scheda_Spese_" + fN + ".txt", 
+                { type: "text/plain;charset=utf-8;" }
+            );
+            
+            const url = URL.createObjectURL(file);
+            const link = document.createElement("a");
+            
+            link.setAttribute("href", url);
+            link.setAttribute("download", "Scheda_Spese_" + fN + ".txt");
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showToast("Documento salvato", "success");
+        }
+
+    </script>
+</body>
+</html>
