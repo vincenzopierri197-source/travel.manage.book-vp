@@ -1,0 +1,10 @@
+Travel-Book Manager 2.0 - UI saldi + navigazione rapida
+
+Modifiche:
+- Saldi persona -> persona con card rosso/verde e pulsante Saldato.
+- Dopo il saldo completo, nessun riquadro rosso/verde attivo: resta storico neutro.
+- Saldo parziale: viene mostrato solo il residuo e i calcoli vengono ricalcolati.
+- Nuova navigazione rapida Dashboard / Spese / Persone / Debiti / Report / Altro.
+- Layout responsive: barra compatta su mobile e desktop.
+- Altro apre Notifiche, Programma, Scanner, Budget, Categorie e Registro.
+- Nessuna immagine di riferimento incorporata: le immagini fornite sono state usate solo come riferimento grafico.
