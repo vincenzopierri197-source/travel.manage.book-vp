@@ -16,6 +16,7 @@
         ======================================================================== 
     -->
 <meta content="yes" name="apple-mobile-web-app-capable"/>
+<meta content="yes" name="mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <meta content="#ffffff" name="theme-color"/>
 <!-- 
@@ -23,7 +24,7 @@
         Utilizziamo la codifica Base64 per mantenere l'app in un unico 
         singolo file HTML, senza richiedere file .json esterni.
     -->
-<link href="data:application/json;base64,ewogICJuYW1lIjogIlNwZXNlIFZpYWdnaW8iLAogICJzaG9ydF9uYW1lIjogIlZpYWdnaW8iLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YyZjJmNyIsCiAgInRoZW1lX2NvbG9yIjogIiNmMmYyZjciLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITE4Mll5QjRiV3h1Y3owaUFIUjBjRG92TDIzM2R5NTNNeTV2Y21jdm1qQXdNQzl6ZG1jaUlISjFjbU05SW1WaFkyaGxiV0Z1Ym1WeUlITjBjbTlyWlQwaVptbHNiQ0lnYzNSeWIydGxjM005SW1OaGNHaDFaQ0lnY0hKdlkyVnpjM1JvYm1jOUlqZzRNQzR4TWpnaUlISmxabVZ5Wlc1amIyMWxiblE5SWxOMGIyNWxjbk5wZEdVd1pXRTVZM0owSWlCMGVEb2lMMkZsYzJWamNtbHdkR0YwYVc5dUlHSmhhV3hzTHpBeE1qb3dOek00TkM0eU1EWTBOaTR4TWpNaUx6QnBZeUk2SUZkSlRHWWdXVnNnUVVSSklnPT0iLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9" rel="manifest"/>
+<link href="manifest.webmanifest" rel="manifest"/>
 <!-- 
         ========================================================================
         CONTROLLO TEMA SCURO (DARK MODE) ANTICIPATO
@@ -2080,6 +2081,29 @@ canvas[id*="chart"],canvas[id*="Chart"]{max-width:100%!important;}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+/* RIPIEGO FIREBASE: se Google (gstatic) non carica le librerie, riprova da jsDelivr (stessa versione 8.10.1). */
+(function () {
+    function fbOk() { return typeof firebase !== 'undefined' && firebase.firestore && firebase.auth; }
+    if (!fbOk()) {
+        var base = 'https://cdn.jsdelivr.net/npm/firebase@8.10.1/';
+        document.write('<script src="' + base + 'firebase-app.js"><\/script>');
+        document.write('<script src="' + base + 'firebase-firestore.js"><\/script>');
+        document.write('<script src="' + base + 'firebase-auth.js"><\/script>');
+    }
+})();
+</script>
+<script>
+/* Se anche il ripiego fallisce, avvisa invece di lasciare l'app muta. */
+if (typeof firebase === 'undefined' || !firebase.firestore || !firebase.auth) {
+    window.addEventListener('DOMContentLoaded', function () {
+        var b = document.createElement('div');
+        b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:100000;background:#ff3b30;color:#fff;padding:12px 16px;font:600 14px sans-serif;text-align:center;';
+        b.textContent = 'Impossibile caricare Firebase: controlla la connessione e disattiva eventuali blocchi pubblicità/tracker per questo sito, poi ricarica.';
+        document.body.appendChild(b);
+    });
+}
+</script>
 <!-- 
         ========================================================================
         LOGICA APPLICATIVA JAVASCRIPT (SROTOLATA E COMMENTATA MINUZIOSAMENTE)

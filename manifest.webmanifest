@@ -1,0 +1,17 @@
+{
+  "name": "Spese Viaggio - Travel-Book Manager",
+  "short_name": "Viaggio",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#f2f2f7",
+  "icons": [
+    {
+      "src": "travel-book-manager-logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
