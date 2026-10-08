@@ -1565,6 +1565,26 @@ html body #cv-result{font-family:var(--font-head);font-size:1.5rem!important;col
 html body #custom-modal>div{border-radius:20px!important;background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)}
 /* Schermata di benvenuto: resta centrata */
 html body #welcome-message h2,html body #welcome-message p{text-align:center!important}
+
+/* ---- Menu "Altro" a scomparsa ---- */
+html body .tbm-backdrop{position:fixed;inset:0;z-index:4998;background:rgba(6,36,47,.42);opacity:0;visibility:hidden;transition:opacity .18s ease,visibility 0s linear .18s}
+html body .tbm-backdrop.open{opacity:1;visibility:visible;transition-delay:0s}
+html body .tbm-sheet{position:absolute;right:0;bottom:calc(100% + 10px);width:min(100%,520px);max-height:min(70vh,580px);overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:14px;background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 44px rgba(6,36,47,.3);pointer-events:auto;visibility:hidden;opacity:0;transform:translateY(10px);transform-origin:bottom right;transition:opacity .16s ease,transform .18s ease,visibility 0s linear .18s}
+html body .tbm-sheet.open{visibility:visible;opacity:1;transform:none;transition-delay:0s}
+html body .tbm-sheet-title{margin:0 4px 8px;font-family:var(--font-head);font-size:.95rem;font-weight:700;color:var(--muted)!important}
+html body .tbm-sheet-title:not(:first-child){margin-top:14px}
+html body .tbm-sheet-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+html body .tbm-item{box-sizing:border-box;width:100%!important;min-height:54px;margin:0!important;padding:8px 12px!important;display:flex!important;align-items:center;justify-content:flex-start;gap:10px;text-align:left;line-height:1.2;font-size:.9rem!important;font-weight:600!important;color:var(--ink)!important;background:var(--tile)!important;border:1px solid transparent!important;border-radius:14px!important;box-shadow:none!important}
+html body .tbm-item svg{flex:0 0 22px;width:22px;height:22px;fill:none;stroke:var(--sea);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+html body .tbm-item:hover{border-color:var(--sea)!important}
+html body .tbm-item:active{transform:scale(.98)}
+html body .tbm-item.current{border-color:var(--sea)!important;box-shadow:inset 0 0 0 1px var(--sea)!important}
+html body .tbm-item:focus-visible{outline:3px solid var(--lemon);outline-offset:2px}
+html body .tbm-dots{display:block;width:24px;height:24px;margin:0 auto;fill:currentColor}
+html body .tbm-nav-btn:focus-visible{outline:2px solid #fff;outline-offset:-4px}
+html body .tbm-nav-btn.active:focus-visible{outline-color:var(--lemon-ink)}
+#card-participants,#card-totals,#card-log,#card-export,#sezione-convertitore,#v2-notifications-card{scroll-margin-top:92px}
+@media (max-width:380px){html body .tbm-item{font-size:.82rem!important;padding:8px 9px!important;gap:8px}html body .tbm-sheet{padding:12px}}
 @media (prefers-reduced-motion:reduce){html body *{transition:none!important;animation:none!important}}
 </style>
 </head>
@@ -1770,22 +1790,38 @@ html body #welcome-message h2,html body #welcome-message p{text-align:center!imp
 <!-- ========================================================================
      NAVIGAZIONE RAPIDA APP - MOBILE / DESKTOP
      ======================================================================== -->
-<div class="tbm-altro-panel" id="tbm-altro-panel" aria-hidden="true">
-  <button class="tbm-altro-btn" onclick="tbmNavigate('v2-notifications-card')">🔔 Notifiche</button>
-  <button class="tbm-altro-btn" onclick="tbmNavigate('card-itinerary')">📓 Programma</button>
-  <button class="tbm-altro-btn" onclick="tbmNavigate('card-scanner')">📷 Scanner</button>
-  <button class="tbm-altro-btn" onclick="tbmNavigate('card-balance')">💰 Budget</button>
-  <button class="tbm-altro-btn" onclick="tbmNavigate('card-categories')">🏷️ Categorie</button>
-  <button class="tbm-altro-btn" onclick="tbmNavigate('activity-log-section')">📋 Registro</button>
-</div>
+<!-- Sfondo che oscura la pagina quando il menu "Altro" è aperto -->
+<div class="tbm-backdrop" id="tbm-backdrop" onclick="tbmCloseAltro()"></div>
 <nav class="tbm-nav-wrap" aria-label="Navigazione Travel-Book Manager">
+  <!-- Menu a scomparsa "Altro": tutte le sezioni che non stanno nella barra -->
+  <div class="tbm-sheet" id="tbm-altro-panel" role="dialog" aria-label="Altre sezioni" aria-hidden="true">
+    <p class="tbm-sheet-title">Il viaggio</p>
+    <div class="tbm-sheet-grid">
+      <button class="tbm-item" type="button" data-tbm-target="card-itinerary" onclick="tbmNavigate('card-itinerary',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5a2 2 0 0 1 2-2h12v15H7a2 2 0 0 0-2 2V5z"/><path d="M5 20a2 2 0 0 0 2 2h12v-4"/><path d="M9 7h6"/></svg><span>Programma</span></button>
+      <button class="tbm-item" type="button" data-tbm-target="card-participants" onclick="tbmNavigate('card-participants',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3 3 0 0 1 0 5.6"/><path d="M18 14.6c1.9.8 3 2.6 3 5.4"/></svg><span>Partecipanti</span></button>
+      <button class="tbm-item" type="button" data-tbm-target="card-categories" onclick="tbmNavigate('card-categories',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12.5V4h8.5L21 13.5 13.5 21 3 12.5z"/><circle cx="7.6" cy="8.6" r="1.2"/></svg><span>Categorie</span></button>
+      <button class="tbm-item" type="button" data-tbm-target="card-balance" onclick="tbmNavigate('card-balance',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7.5z"/><path d="M3 8l12-4v2"/><circle cx="16.5" cy="13.5" r="1.2"/></svg><span>Budget</span></button>
+    </div>
+    <p class="tbm-sheet-title">Strumenti</p>
+    <div class="tbm-sheet-grid">
+      <button class="tbm-item" type="button" data-tbm-target="card-scanner" onclick="tbmNavigate('card-scanner',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V6a2 2 0 0 1 2-2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v2"/><path d="M20 16v2a2 2 0 0 1-2 2h-2"/><path d="M8 20H6a2 2 0 0 1-2-2v-2"/><path d="M4 12h16"/></svg><span>Scanner scontrini</span></button>
+      <button class="tbm-item" type="button" data-tbm-target="sezione-convertitore" onclick="tbmNavigate('sezione-convertitore',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4 3 8l4 4"/><path d="M3 8h13"/><path d="m17 20 4-4-4-4"/><path d="M21 16H8"/></svg><span>Convertitore valuta</span></button>
+      <button class="tbm-item" type="button" data-tbm-target="v2-notifications-card" onclick="tbmNavigate('v2-notifications-card',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4l2-2z"/><path d="M10 21h4"/></svg><span>Notifiche</span></button>
+      <button class="tbm-item" type="button" data-tbm-target="card-totals" onclick="tbmNavigate('card-totals',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11"/><path d="M12 20V4"/><path d="M19 20v-7"/></svg><span>Grafici e totali</span></button>
+    </div>
+    <p class="tbm-sheet-title">Dati</p>
+    <div class="tbm-sheet-grid">
+      <button class="tbm-item" type="button" data-tbm-target="card-log" onclick="tbmNavigate('card-log',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h11"/><path d="M9 12h11"/><path d="M9 18h11"/><path d="M4 6h.01"/><path d="M4 12h.01"/><path d="M4 18h.01"/></svg><span>Elenco spese e registro</span></button>
+      <button class="tbm-item" type="button" data-tbm-target="card-export" onclick="tbmNavigate('card-export',null,true)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11"/><path d="m7 11 5 5 5-5"/><path d="M4 20h16"/></svg><span>Esporta e importa</span></button>
+    </div>
+  </div>
   <div class="tbm-nav">
     <button class="tbm-nav-btn active" data-tbm-target="v2-dashboard-card" onclick="tbmNavigate('v2-dashboard-card',this)"><span class="tbm-nav-icon">📊</span><span>Dashboard</span></button>
     <button class="tbm-nav-btn" data-tbm-target="sezione-aggiungi-spesa" onclick="tbmNavigate('sezione-aggiungi-spesa',this)"><span class="tbm-nav-icon">🧾</span><span>Spese</span></button>
     <button class="tbm-nav-btn" data-tbm-target="v2-people-card" onclick="tbmNavigate('v2-people-card',this)"><span class="tbm-nav-icon">👥</span><span>Persone</span></button>
     <button class="tbm-nav-btn" data-tbm-target="v2-balances-card" onclick="tbmNavigate('v2-balances-card',this)"><span class="tbm-nav-icon">↔️</span><span>Debiti</span></button>
     <button class="tbm-nav-btn" data-tbm-target="v2-report-card" onclick="tbmNavigate('v2-report-card',this)"><span class="tbm-nav-icon">📄</span><span>Report</span></button>
-    <button class="tbm-nav-btn" id="tbm-altro-btn" onclick="toggleTbmAltro()"><span class="tbm-nav-icon">•••</span><span>Altro</span></button>
+    <button class="tbm-nav-btn" id="tbm-altro-btn" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="tbm-altro-panel" onclick="toggleTbmAltro()"><span class="tbm-nav-icon"><svg class="tbm-dots" viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></span><span>Altro</span></button>
   </div>
 </nav>
 <div class="tbm-nav-spacer"></div>
@@ -1878,7 +1914,7 @@ html body #welcome-message h2,html body #welcome-message p{text-align:center!imp
 </div>
 </div>
 <!-- CARD: PARTECIPANTI -->
-<div class="card card-participants">
+<div class="card card-participants" id="card-participants">
 <h2 data-i18n="participants_title">
                 👥 Partecipanti
             </h2>
@@ -2043,7 +2079,7 @@ html body #welcome-message h2,html body #welcome-message p{text-align:center!imp
 </form>
 </div>
 <!-- CARD: GRAFICI TOTALI -->
-<div class="card card-totals">
+<div class="card card-totals" id="card-totals">
 <h2 data-i18n="charts_title">
                 📈 Spese Totali
             </h2>
@@ -2065,7 +2101,7 @@ html body #welcome-message h2,html body #welcome-message p{text-align:center!imp
 <!-- CARD: REGISTRO SPESE CON LOG E FILTRI -->
 <!-- FIX-4: il pulsante "Mostra Azioni" del codice storico è mantenuto esplicitamente. -->
 
-<div class="card card-log">
+<div class="card card-log" id="card-log">
 <h2 data-i18n="log_title">
                 📋 Registro Spese Condiviso
             </h2>
@@ -2107,7 +2143,7 @@ html body #welcome-message h2,html body #welcome-message p{text-align:center!imp
             </button>
 </div>
 <!-- CARD: ESPORTAZIONE COMPLETA -->
-<div class="card card-export">
+<div class="card card-export" id="card-export">
 <h2 data-i18n="export_title">
                 📊 Esporta Dati
             </h2>
@@ -5935,19 +5971,61 @@ window.addEventListener('DOMContentLoaded', function()
         /* ========================================================================
            NAVIGAZIONE RAPIDA RESPONSIVE
            ======================================================================== */
-        function tbmNavigate(targetId, button)
+        var tbmCurrent = null;
+
+        function tbmMarkActive(btn)
+        {
+            document.querySelectorAll('.tbm-nav-btn').forEach(function(b){b.classList.remove('active');});
+            if (btn) btn.classList.add('active');
+        }
+
+        function tbmSetAltro(open)
+        {
+            const panel = document.getElementById('tbm-altro-panel');
+            const backdrop = document.getElementById('tbm-backdrop');
+            const btn = document.getElementById('tbm-altro-btn');
+            if (!panel) return;
+            panel.classList.toggle('open', open);
+            panel.setAttribute('aria-hidden', open ? 'false' : 'true');
+            if (backdrop) backdrop.classList.toggle('open', open);
+            if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        function tbmCloseAltro()
+        {
+            tbmSetAltro(false);
+            tbmMarkActive(tbmCurrent);
+        }
+
+        function toggleTbmAltro()
+        {
+            const panel = document.getElementById('tbm-altro-panel');
+            if (!panel) return;
+            if (panel.classList.contains('open'))
+            {
+                tbmCloseAltro();
+                return;
+            }
+            if (!tbmCurrent) tbmCurrent = document.querySelector('.tbm-nav-btn.active');
+            tbmSetAltro(true);
+            tbmMarkActive(document.getElementById('tbm-altro-btn'));
+        }
+
+        function tbmNavigate(targetId, button, fromAltro)
         {
             const target = document.getElementById(targetId);
             if (!target) return;
 
-            if (button)
-            {
-                document.querySelectorAll('.tbm-nav-btn').forEach(function(b){b.classList.remove('active');});
-                button.classList.add('active');
-            }
+            if (button) tbmCurrent = button;
+            else if (fromAltro) tbmCurrent = document.getElementById('tbm-altro-btn');
 
-            const panel=document.getElementById('tbm-altro-panel');
-            if(panel){panel.classList.remove('open');panel.setAttribute('aria-hidden','true');}
+            document.querySelectorAll('.tbm-item').forEach(function(i)
+            {
+                i.classList.toggle('current', !!fromAltro && i.getAttribute('data-tbm-target') === targetId);
+            });
+
+            tbmSetAltro(false);
+            tbmMarkActive(tbmCurrent);
 
             target.scrollIntoView({behavior:'smooth',block:'start'});
 
@@ -5961,25 +6039,14 @@ window.addEventListener('DOMContentLoaded', function()
             },380);
         }
 
-        function toggleTbmAltro()
+        document.addEventListener('keydown', function(e)
         {
-            const panel=document.getElementById('tbm-altro-panel');
-            if(!panel)return;
-            const open=panel.classList.toggle('open');
-            panel.setAttribute('aria-hidden',open?'false':'true');
-            document.querySelectorAll('.tbm-nav-btn').forEach(function(b){b.classList.remove('active');});
-            const btn=document.getElementById('tbm-altro-btn');
-            if(btn && open)btn.classList.add('active');
-        }
-
-        document.addEventListener('click',function(e)
-        {
-            const panel=document.getElementById('tbm-altro-panel');
-            const btn=document.getElementById('tbm-altro-btn');
-            if(panel && panel.classList.contains('open') && !panel.contains(e.target) && !(btn && btn.contains(e.target)))
+            const panel = document.getElementById('tbm-altro-panel');
+            if (e.key === 'Escape' && panel && panel.classList.contains('open'))
             {
-                panel.classList.remove('open');
-                panel.setAttribute('aria-hidden','true');
+                tbmCloseAltro();
+                const btn = document.getElementById('tbm-altro-btn');
+                if (btn) btn.focus();
             }
         });
 
