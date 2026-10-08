@@ -3825,24 +3825,65 @@ window.addEventListener('DOMContentLoaded', function()
                 {
                     if (res && res.name && res.name.trim()) 
                     {
-                        let createAuthErr = null;
+                        /*
+                         * La creazione richiede autenticazione Firebase.
+                         * Prima il codice continuava anche se signInAnonymously() falliva:
+                         * con Rules che richiedono request.auth != null il viaggio non poteva
+                         * essere creato e l'errore risultava poco chiaro.
+                         */
+                        let authUser;
                         try
                         {
-                            await ensureFirebaseAuth();
+                            authUser = await ensureFirebaseAuth();
                         }
                         catch (authError)
                         {
-                            /* Con le Rules di test precedenti l'app resta compatibile. */
-                            console.warn("Auth non disponibile durante la creazione:", authError);
-                            createAuthErr = authError;
+                            console.error("Autenticazione necessaria per creare il viaggio:", authError);
+                            const authCode = authError && authError.code ? authError.code : "auth-error";
+                            showToast(
+                                "Impossibile creare il viaggio: autenticazione Firebase non disponibile (" + authCode + "). Abilita l'accesso anonimo in Firebase Authentication.",
+                                "error"
+                            );
+                            return;
                         }
+
+                        if (!authUser || !authUser.uid)
+                        {
+                            showToast("Impossibile creare il viaggio: sessione Firebase non disponibile.", "error");
+                            return;
+                        }
+
                         showLoading(true, "Creazione...");
-                        
-                        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-                        
+
                         try 
                         {
-                            await db.collection("trips").doc(code).set({
+                            /*
+                             * Generiamo il codice e verifichiamo che non esista già.
+                             * Prima un eventuale codice casualmente uguale poteva sovrascrivere
+                             * un viaggio esistente con .set().
+                             */
+                            let code = null;
+                            let tripRef = null;
+                            for (let attempt = 0; attempt < 8; attempt++)
+                            {
+                                const candidate = Math.random().toString(36).substring(2, 8).toUpperCase();
+                                const candidateRef = db.collection("trips").doc(candidate);
+                                const existing = await candidateRef.get();
+                                if (!existing.exists)
+                                {
+                                    code = candidate;
+                                    tripRef = candidateRef;
+                                    break;
+                                }
+                            }
+
+                            if (!code || !tripRef)
+                            {
+                                throw new Error("Impossibile generare un codice viaggio disponibile. Riprova.");
+                            }
+
+                            await tripRef.set({
+                                name: res.name.trim(), 
                                 name: res.name.trim(), 
                                 currency: res.currency, 
                                 budget: 0, 
@@ -3870,6 +3911,9 @@ window.addEventListener('DOMContentLoaded', function()
                                 settledPayments: [],
                                 settlementHistory: [],
                                 notifications: [{id:"n_"+Date.now(),type:"system",message:"Viaggio creato",time:new Date().toISOString(),read:false,by:"Sistema"}],
+                                ownerUid: authUser.uid,
+                                createdBy: authUser.uid,
+                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                                 schemaVersion: 2
                             });
                             
@@ -3898,7 +3942,6 @@ window.addEventListener('DOMContentLoaded', function()
                             {
                                 errMsg = "Errore: " + e.message;
                             }
-                            if (createAuthErr && createAuthErr.code) errMsg += " [auth: " + createAuthErr.code + "]";
                             showToast(errMsg, "error"); 
                         }
                     }
