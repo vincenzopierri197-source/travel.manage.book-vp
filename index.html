@@ -1535,7 +1535,7 @@ html body{font-family:var(--font-body)!important;background:var(--bg)!important;
 html body h1,html body h2,html body h3{font-family:var(--font-head)!important;color:var(--ink)!important;text-align:left!important;letter-spacing:-.015em;font-weight:700}
 html body h2{font-size:1.35rem}
 /* Schede: piatte, bordo sottile, niente sfumature né barre colorate */
-html body .card,html body [class*="card-"]{background:var(--surface)!important;background-image:none!important;border:1px solid var(--line)!important;border-left:1px solid var(--line)!important;box-shadow:none!important;border-radius:18px!important;color:var(--ink)!important}
+html body .card{background:var(--surface)!important;background-image:none!important;border:1px solid var(--line)!important;border-left:1px solid var(--line)!important;box-shadow:none!important;border-radius:18px!important;color:var(--ink)!important}
 html body .card p,html body .card label,html body .card small{color:var(--muted)!important}
 /* Fascia in alto */
 html body .top-bar{background:var(--band)!important;border-bottom:0!important;box-shadow:none!important;color:var(--band-ink)!important}
@@ -1563,6 +1563,8 @@ html body .tbm-nav-btn.active{background:var(--lemon)!important;color:var(--lemo
 html body .card strong,html body .card b{font-variant-numeric:tabular-nums}
 html body #cv-result{font-family:var(--font-head);font-size:1.5rem!important;color:var(--sea)!important}
 html body #custom-modal>div{border-radius:20px!important;background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)}
+/* Schermata di benvenuto: resta centrata */
+html body #welcome-message h2,html body #welcome-message p{text-align:center!important}
 @media (prefers-reduced-motion:reduce){html body *{transition:none!important;animation:none!important}}
 </style>
 </head>
