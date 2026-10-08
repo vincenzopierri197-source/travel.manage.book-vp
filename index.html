@@ -16,7 +16,6 @@
         ======================================================================== 
     -->
 <meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="yes" name="mobile-web-app-capable"/>
 <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
 <meta content="#ffffff" name="theme-color"/>
 <!-- 
@@ -24,7 +23,7 @@
         Utilizziamo la codifica Base64 per mantenere l'app in un unico 
         singolo file HTML, senza richiedere file .json esterni.
     -->
-<link href="manifest.webmanifest" rel="manifest"/>
+<link href="data:application/json;base64,ewogICJuYW1lIjogIlNwZXNlIFZpYWdnaW8iLAogICJzaG9ydF9uYW1lIjogIlZpYWdnaW8iLAogICJzdGFydF91cmwiOiAiLyIsCiAgImRpc3BsYXkiOiAic3RhbmRhbG9uZSIsCiAgImJhY2tncm91bmRfY29sb3IiOiAiI2YyZjJmNyIsCiAgInRoZW1lX2NvbG9yIjogIiNmMmYyZjciLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJkYXRhOmltYWdlL3N2Zyt4bWw7YmFzZTY0LFBITE4Mll5QjRiV3h1Y3owaUFIUjBjRG92TDIzM2R5NTNNeTV2Y21jdm1qQXdNQzl6ZG1jaUlISjFjbU05SW1WaFkyaGxiV0Z1Ym1WeUlITjBjbTlyWlQwaVptbHNiQ0lnYzNSeWIydGxjM005SW1OaGNHaDFaQ0lnY0hKdlkyVnpjM1JvYm1jOUlqZzRNQzR4TWpnaUlISmxabVZ5Wlc1amIyMWxiblE5SWxOMGIyNWxjbk5wZEdVd1pXRTVZM0owSWlCMGVEb2lMMkZsYzJWamNtbHdkR0YwYVc5dUlHSmhhV3hzTHpBeE1qb3dOek00TkM0eU1EWTBOaTR4TWpNaUx6QnBZeUk2SUZkSlRHWWdXVnNnUVVSSklnPT0iLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9" rel="manifest"/>
 <!-- 
         ========================================================================
         CONTROLLO TEMA SCURO (DARK MODE) ANTICIPATO
@@ -1930,17 +1929,6 @@ canvas[id*="chart"],canvas[id*="Chart"]{max-width:100%!important;}
                 </button>
 </div>
 </div>
-<!-- CARD: CONVERTITORE VALUTA -->
-<div class="card" id="sezione-convertitore">
-<h2>💱 Convertitore valuta</h2>
-<label>Importo pagato in valuta locale</label>
-<input id="cv-amt" min="0" oninput="cvScheduleConvert()" placeholder="0.00" step="0.01" type="number"/>
-<label>Valuta pagata</label>
-<select id="cv-from" onchange="cvConvert()"><option value="AUD">AUD</option><option value="BRL">BRL</option><option value="CAD">CAD</option><option value="CHF">CHF</option><option value="CNY">CNY</option><option value="CZK">CZK</option><option value="DKK">DKK</option><option value="EUR">EUR</option><option value="GBP">GBP</option><option value="HKD">HKD</option><option value="HUF">HUF</option><option value="IDR">IDR</option><option value="ILS">ILS</option><option value="INR">INR</option><option value="ISK">ISK</option><option value="JPY">JPY</option><option value="KRW">KRW</option><option value="MXN">MXN</option><option value="MYR">MYR</option><option value="NOK">NOK</option><option value="NZD">NZD</option><option value="PHP">PHP</option><option value="PLN">PLN</option><option value="RON">RON</option><option value="SEK">SEK</option><option value="SGD">SGD</option><option value="THB">THB</option><option value="TRY">TRY</option><option value="USD">USD</option><option value="ZAR">ZAR</option></select>
-<div id="cv-result" style="margin: 14px 0 6px; font-size: 1.15rem; font-weight: 700;">—</div>
-<small id="cv-meta" style="display: block; margin-bottom: 12px; opacity: 0.7;"></small>
-<button onclick="cvUseAsAmount()" type="button">⬇️ Usa come importo della spesa</button>
-</div>
 <!-- CARD: AGGIUNGI O MODIFICA SPESA -->
 <div class="card card-add" id="sezione-aggiungi-spesa">
 <h2 data-i18n="add_exp_title">
@@ -2066,10 +2054,6 @@ canvas[id*="chart"],canvas[id*="Chart"]{max-width:100%!important;}
 <button class="export-btn" data-i18n="btn_dl_csv" onclick="exportCSV()">
                 Esporta in Excel (CSV Gruppo Completo)
             </button>
-<button class="export-btn" id="import-csv-btn" onclick="document.getElementById('import-csv-file').click()" style="margin-top: 10px; background-color: #34c759;" type="button">
-                📥 Importa spese da CSV
-            </button>
-<input accept=".csv,text/csv,text/plain" id="import-csv-file" onchange="handleCSVImportFile(this)" style="display: none;" type="file"/>
 </div>
 </div>
 <!-- COPYRIGHT E FOOTER -->
@@ -2081,29 +2065,6 @@ canvas[id*="chart"],canvas[id*="Chart"]{max-width:100%!important;}
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
-<script>
-/* RIPIEGO FIREBASE: se Google (gstatic) non carica le librerie, riprova da jsDelivr (stessa versione 8.10.1). */
-(function () {
-    function fbOk() { return typeof firebase !== 'undefined' && firebase.firestore && firebase.auth; }
-    if (!fbOk()) {
-        var base = 'https://cdn.jsdelivr.net/npm/firebase@8.10.1/';
-        document.write('<script src="' + base + 'firebase-app.js"><\/script>');
-        document.write('<script src="' + base + 'firebase-firestore.js"><\/script>');
-        document.write('<script src="' + base + 'firebase-auth.js"><\/script>');
-    }
-})();
-</script>
-<script>
-/* Se anche il ripiego fallisce, avvisa invece di lasciare l'app muta. */
-if (typeof firebase === 'undefined' || !firebase.firestore || !firebase.auth) {
-    window.addEventListener('DOMContentLoaded', function () {
-        var b = document.createElement('div');
-        b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:100000;background:#ff3b30;color:#fff;padding:12px 16px;font:600 14px sans-serif;text-align:center;';
-        b.textContent = 'Impossibile caricare Firebase: controlla la connessione e disattiva eventuali blocchi pubblicità/tracker per questo sito, poi ricarica.';
-        document.body.appendChild(b);
-    });
-}
-</script>
 <!-- 
         ========================================================================
         LOGICA APPLICATIVA JAVASCRIPT (SROTOLATA E COMMENTATA MINUZIOSAMENTE)
@@ -3825,65 +3786,22 @@ window.addEventListener('DOMContentLoaded', function()
                 {
                     if (res && res.name && res.name.trim()) 
                     {
-                        /*
-                         * La creazione richiede autenticazione Firebase.
-                         * Prima il codice continuava anche se signInAnonymously() falliva:
-                         * con Rules che richiedono request.auth != null il viaggio non poteva
-                         * essere creato e l'errore risultava poco chiaro.
-                         */
-                        let authUser;
                         try
                         {
-                            authUser = await ensureFirebaseAuth();
+                            await ensureFirebaseAuth();
                         }
                         catch (authError)
                         {
-                            console.error("Autenticazione necessaria per creare il viaggio:", authError);
-                            const authCode = authError && authError.code ? authError.code : "auth-error";
-                            showToast(
-                                "Impossibile creare il viaggio: autenticazione Firebase non disponibile (" + authCode + "). Abilita l'accesso anonimo in Firebase Authentication.",
-                                "error"
-                            );
-                            return;
+                            /* Con le Rules di test precedenti l'app resta compatibile. */
+                            console.warn("Auth non disponibile durante la creazione:", authError);
                         }
-
-                        if (!authUser || !authUser.uid)
-                        {
-                            showToast("Impossibile creare il viaggio: sessione Firebase non disponibile.", "error");
-                            return;
-                        }
-
                         showLoading(true, "Creazione...");
-
+                        
+                        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                        
                         try 
                         {
-                            /*
-                             * Generiamo il codice e verifichiamo che non esista già.
-                             * Prima un eventuale codice casualmente uguale poteva sovrascrivere
-                             * un viaggio esistente con .set().
-                             */
-                            let code = null;
-                            let tripRef = null;
-                            for (let attempt = 0; attempt < 8; attempt++)
-                            {
-                                const candidate = Math.random().toString(36).substring(2, 8).toUpperCase();
-                                const candidateRef = db.collection("trips").doc(candidate);
-                                const existing = await candidateRef.get();
-                                if (!existing.exists)
-                                {
-                                    code = candidate;
-                                    tripRef = candidateRef;
-                                    break;
-                                }
-                            }
-
-                            if (!code || !tripRef)
-                            {
-                                throw new Error("Impossibile generare un codice viaggio disponibile. Riprova.");
-                            }
-
-                            await tripRef.set({
-                                name: res.name.trim(), 
+                            await db.collection("trips").doc(code).set({
                                 name: res.name.trim(), 
                                 currency: res.currency, 
                                 budget: 0, 
@@ -3911,9 +3829,6 @@ window.addEventListener('DOMContentLoaded', function()
                                 settledPayments: [],
                                 settlementHistory: [],
                                 notifications: [{id:"n_"+Date.now(),type:"system",message:"Viaggio creato",time:new Date().toISOString(),read:false,by:"Sistema"}],
-                                ownerUid: authUser.uid,
-                                createdBy: authUser.uid,
-                                createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                                 schemaVersion: 2
                             });
                             
@@ -3925,24 +3840,7 @@ window.addEventListener('DOMContentLoaded', function()
                         catch (e) 
                         { 
                             showLoading(false); 
-                            console.error("Creazione viaggio fallita:", e);
-                            const errCode = (e && e.code) ? e.code : "";
-                            let errMsg = "Errore di connessione";
-                            if (errCode === "permission-denied")
-                            {
-                                errMsg = firebaseAuthUser
-                                    ? "Permesso negato da Firebase: controlla le regole di Firestore"
-                                    : "Permesso negato: accesso anonimo non attivo o regole Firestore da aggiornare";
-                            }
-                            else if (errCode === "unavailable")
-                            {
-                                errMsg = "Firebase non raggiungibile: controlla la connessione";
-                            }
-                            else if (e && e.message)
-                            {
-                                errMsg = "Errore: " + e.message;
-                            }
-                            showToast(errMsg, "error"); 
+                            showToast("Errore di connessione", "error"); 
                         }
                     }
                 }
@@ -4023,7 +3921,6 @@ window.addEventListener('DOMContentLoaded', function()
                     {
                         lblAmt.innerText = "Importo (" + globalCurrency + ")";
                     }
-                    if (typeof cvSyncTarget === 'function') cvSyncTarget();
                     
                     saveRecentTrip(code, currentTripName);
                     
@@ -5294,350 +5191,7 @@ window.addEventListener('DOMContentLoaded', function()
          * DESCRIPTION: Generates the master CSV sheet for the whole group.
          * ============================================================================
          */
-/* MODULO: CONVERTITORE VALUTA (Frankfurter API - tassi BCE, senza chiave) */
-        const CV_SYMBOL_MAP = { '€': 'EUR', '$': 'USD', '£': 'GBP', '¥': 'JPY', 'CHF': 'CHF' };
-        const CV_ENDPOINTS = [
-            function(f, t){ return 'https://api.frankfurter.dev/v1/latest?base=' + f + '&symbols=' + t; },
-            function(f, t){ return 'https://api.frankfurter.app/latest?from=' + f + '&to=' + t; }
-        ];
-        let cvMemCache = {};
-        let cvTimer = null;
-        let cvLast = null;
-        let cvReq = 0;
-
-        function cvTripCode()
-        {
-            if (CV_SYMBOL_MAP[globalCurrency]) return CV_SYMBOL_MAP[globalCurrency];
-            return /^[A-Z]{3}$/.test(globalCurrency) ? globalCurrency : 'EUR';
-        }
-
-        function cvSyncTarget()
-        {
-            const from = document.getElementById('cv-from');
-            if (!from) return;
-            const lbl = document.getElementById('cv-amt');
-            if (lbl) lbl.setAttribute('aria-label', 'Importo da convertire in ' + cvTripCode());
-            cvConvert();
-        }
-
-        function cvInit()
-        {
-            const from = document.getElementById('cv-from');
-            if (!from) return;
-            let saved = null;
-            try { saved = localStorage.getItem('tbm_fx_from'); } catch (e) {}
-            from.value = saved && from.querySelector('option[value="' + saved + '"]') ? saved : (cvTripCode() === 'USD' ? 'EUR' : 'USD');
-        }
-
-        function cvScheduleConvert()
-        {
-            clearTimeout(cvTimer);
-            cvTimer = setTimeout(cvConvert, 300);
-        }
-
-        async function cvGetRate(from, to)
-        {
-            if (from === to) return { rate: 1, date: '', source: 'same' };
-            const key = from + '_' + to;
-            const mem = cvMemCache[key];
-            if (mem && Date.now() - mem.ts < 30 * 60 * 1000) return mem;
-
-            for (let i = 0; i < CV_ENDPOINTS.length; i++)
-            {
-                try
-                {
-                    const ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
-                    const to_ = ctrl ? setTimeout(function(){ ctrl.abort(); }, 6000) : null;
-                    const res = await fetch(CV_ENDPOINTS[i](from, to), ctrl ? { signal: ctrl.signal } : undefined);
-                    if (to_) clearTimeout(to_);
-                    if (!res.ok) continue;
-                    const data = await res.json();
-                    const rate = data && data.rates ? Number(data.rates[to]) : NaN;
-                    if (!(rate > 0)) continue;
-                    const out = { rate: rate, date: data.date || '', ts: Date.now(), source: 'live' };
-                    cvMemCache[key] = out;
-                    try { localStorage.setItem('tbm_fx_' + key, JSON.stringify(out)); } catch (e) {}
-                    return out;
-                }
-                catch (e) { /* prova il prossimo endpoint */ }
-            }
-
-            try
-            {
-                const raw = localStorage.getItem('tbm_fx_' + key);
-                if (raw)
-                {
-                    const c = JSON.parse(raw);
-                    if (c && c.rate > 0) { c.source = 'cache'; return c; }
-                }
-            }
-            catch (e) {}
-            return null;
-        }
-
-        async function cvConvert()
-        {
-            const amtEl = document.getElementById('cv-amt');
-            const fromEl = document.getElementById('cv-from');
-            const resEl = document.getElementById('cv-result');
-            const metaEl = document.getElementById('cv-meta');
-            if (!amtEl || !fromEl || !resEl || !metaEl) return;
-
-            const from = fromEl.value;
-            const to = cvTripCode();
-            try { localStorage.setItem('tbm_fx_from', from); } catch (e) {}
-
-            const amount = parseFloat(amtEl.value);
-            const myReq = ++cvReq;
-            metaEl.innerText = 'Aggiorno il cambio...';
-            const info = await cvGetRate(from, to);
-            if (myReq !== cvReq) return;
-
-            if (!info)
-            {
-                cvLast = null;
-                resEl.innerText = '—';
-                metaEl.innerText = 'Cambio non disponibile: controlla la connessione.';
-                return;
-            }
-
-            const rateTxt = '1 ' + from + ' = ' + info.rate.toFixed(4) + ' ' + to;
-            let note = '';
-            if (info.source === 'live') note = ' · tasso BCE del ' + info.date;
-            else if (info.source === 'cache') note = ' · offline: ultimo tasso salvato' + (info.date ? ' (' + info.date + ')' : '');
-
-            if (!(amount >= 0))
-            {
-                cvLast = null;
-                resEl.innerText = '—';
-                metaEl.innerText = rateTxt + note;
-                return;
-            }
-
-            const converted = amount * info.rate;
-            cvLast = { value: converted, to: to };
-            resEl.innerText = amount.toFixed(2) + ' ' + from + ' = ' + converted.toFixed(2) + ' ' + to;
-            metaEl.innerText = rateTxt + note;
-        }
-
-        function cvUseAsAmount()
-        {
-            if (!cvLast) { showToast('Inserisci prima un importo da convertire', 'error'); return; }
-            const amt = document.getElementById('amt');
-            if (!amt) return;
-            amt.value = cvLast.value.toFixed(2);
-            showToast('Importo impostato: ' + cvLast.value.toFixed(2) + ' ' + cvLast.to, 'success');
-            const sec = document.getElementById('sezione-aggiungi-spesa');
-            if (sec) sec.scrollIntoView({ behavior: 'smooth' });
-            amt.focus();
-        }
-
-        setTimeout(cvInit, 0);
-
-        /* MODULO: IMPORTA SPESE DA CSV */
-        function csvParseRows(text, delim)
-        {
-            const rows = [];
-            let row = [], cur = '', q = false;
-            for (let i = 0; i < text.length; i++)
-            {
-                const ch = text[i];
-                if (q)
-                {
-                    if (ch === '"')
-                    {
-                        if (text[i + 1] === '"') { cur += '"'; i++; }
-                        else q = false;
-                    }
-                    else cur += ch;
-                }
-                else if (ch === '"') q = true;
-                else if (ch === delim) { row.push(cur); cur = ''; }
-                else if (ch === '\n' || ch === '\r')
-                {
-                    if (ch === '\r' && text[i + 1] === '\n') i++;
-                    row.push(cur); cur = '';
-                    rows.push(row); row = [];
-                }
-                else cur += ch;
-            }
-            if (cur !== '' || row.length) { row.push(cur); rows.push(row); }
-            return rows;
-        }
-
-        function csvParseAmount(v)
-        {
-            let t = String(v == null ? '' : v).replace(/[^\d,.\-]/g, '');
-            if (!t || t === '-') return 0;
-            if (t.indexOf(',') > -1) t = t.replace(/\./g, '').replace(',', '.');
-            const n = parseFloat(t);
-            return isNaN(n) ? 0 : n;
-        }
-
-        function csvParseDate(v)
-        {
-            const t = String(v || '').trim();
-            let m = t.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})$/);
-            if (m)
-            {
-                let y = m[3]; if (y.length === 2) y = '20' + y;
-                const mo = parseInt(m[2], 10), d = parseInt(m[1], 10);
-                if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
-                return y + '-' + ('0' + mo).slice(-2) + '-' + ('0' + d).slice(-2);
-            }
-            m = t.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-            return m ? t : null;
-        }
-
-        function csvKey(v) { return String(v || '').replace(/[^\p{L}\p{N}]+/gu, '').toLowerCase(); }
-
-        function csvDecode(buffer)
-        {
-            try { return new TextDecoder('utf-8', { fatal: true }).decode(buffer); }
-            catch (e) { return new TextDecoder('windows-1252').decode(buffer); }
-        }
-
-        function handleCSVImportFile(input)
-        {
-            const file = input && input.files && input.files[0];
-            if (!file) return;
-            if (!currentTripCode) { showToast('Apri prima un viaggio per importare le spese', 'error'); input.value = ''; return; }
-
-            const reader = new FileReader();
-            reader.onerror = function() { showToast('Impossibile leggere il file', 'error'); input.value = ''; };
-            reader.onload = function()
-            {
-                try { prepareCSVImport(csvDecode(reader.result)); }
-                catch (err) { console.error(err); showToast('File CSV non valido', 'error'); }
-                input.value = '';
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function prepareCSVImport(text)
-        {
-            text = text.replace(/^\uFEFF/, '');
-            const sample = text.slice(0, 3000);
-            const delim = (sample.split(';').length >= sample.split(',').length) ? ';' : ',';
-            const rows = csvParseRows(text, delim);
-
-            let hIdx = -1;
-            for (let i = 0; i < rows.length; i++)
-            {
-                const k = rows[i].map(csvKey);
-                if (k.some(function(c){ return c === 'data' || c === 'dataufficiale'; }) &&
-                    k.some(function(c){ return c === 'oggetto' || c === 'descrizione'; })) { hIdx = i; break; }
-            }
-            if (hIdx < 0) { showToast('Intestazione non trovata: serve la colonna "Data Ufficiale" e "Oggetto"', 'error'); return; }
-
-            const head = rows[hIdx].map(function(c){ return c.trim(); });
-            const findCol = function(re){ return head.findIndex(function(h){ return re.test(h.toLowerCase()); }); };
-            const col = {
-                date: findCol(/^data/), desc: findCol(/oggetto|descrizione/), cat: findCol(/reparto|categoria/),
-                who: findCol(/pagatore|pagato/), amt: findCol(/costo|importo|totale/),
-                split: findCol(/divisione|split/), ref: findCol(/soggetto|riferimento/)
-            };
-            const quotaCols = [];
-            head.forEach(function(h, i){ const m = h.match(/^quota\s+(.+)$/i); if (m) quotaCols.push({ idx: i, name: m[1].trim() }); });
-            if (col.desc < 0 || col.amt < 0 || col.who < 0) { showToast('Colonne obbligatorie mancanti (Oggetto, Pagatore, Costo)', 'error'); return; }
-
-            const cell = function(r, i){ return i >= 0 && i < r.length ? String(r[i]).trim() : ''; };
-            const parsed = [];
-            let skipped = 0;
-
-            for (let i = hIdx + 1; i < rows.length; i++)
-            {
-                const r = rows[i];
-                if (/^sommario/i.test(cell(r, 0))) break;
-                const rawDate = cell(r, col.date);
-                const desc = cell(r, col.desc);
-                const amt = csvParseAmount(cell(r, col.amt));
-                if (!rawDate && !desc && !amt) continue;
-                const date = rawDate.toLowerCase() === 'nessuna data' ? '' : csvParseDate(rawDate);
-                if (date === null || !desc || !(amt > 0)) { skipped++; continue; }
-
-                const splitRaw = cell(r, col.split).toLowerCase();
-                parsed.push({
-                    date: date, desc: desc, catRaw: cell(r, col.cat), whoRaw: cell(r, col.who), amt: amt,
-                    split: splitRaw.indexOf('pers') === 0 ? 'personal' : 'shared',
-                    refRaw: cell(r, col.ref),
-                    quotas: quotaCols.map(function(q){ return { name: q.name, v: csvParseAmount(cell(r, q.idx)) }; })
-                });
-            }
-            if (!parsed.length) { showToast('Nessuna spesa valida trovata nel file', 'error'); return; }
-
-            const nameMap = {};
-            participants.forEach(function(p){ nameMap[csvKey(p)] = p; });
-            const newPeople = [];
-            const resolveName = function(n)
-            {
-                n = String(n || '').trim();
-                if (!n || n === '-') return '';
-                const k = csvKey(n);
-                if (!nameMap[k]) { nameMap[k] = n; newPeople.push(n); }
-                return nameMap[k];
-            };
-
-            const catMap = {};
-            customCategories.forEach(function(c){ catMap[csvKey(c)] = c; });
-            const newCats = [];
-            const resolveCat = function(n)
-            {
-                n = String(n || '').trim();
-                if (!n) n = 'Altro';
-                const k = csvKey(n);
-                if (!catMap[k]) { catMap[k] = n; newCats.push(n); }
-                return catMap[k];
-            };
-
-            const incoming = parsed.map(function(x)
-            {
-                const who = resolveName(x.whoRaw);
-                const ref = resolveName(x.refRaw);
-                const cat = resolveCat(x.catRaw);
-                const quotaNames = x.quotas.map(function(q){ return { name: resolveName(q.name), v: q.v }; });
-                let sharedWith = [];
-                if (x.split === 'shared')
-                    sharedWith = quotaNames.filter(function(q){ return q.v > 0.005 && q.name; }).map(function(q){ return q.name; });
-                return { date: x.date, desc: x.desc, cat: cat, who: who, amt: x.amt, split: x.split,
-                         forWhom: x.split === 'personal' ? (ref || who) : '', sharedWith: sharedWith };
-            }).filter(function(e){ return e.who; });
-
-            // Evita doppioni se si importa due volte lo stesso file
-            const sig = function(e){ return [e.date, csvKey(e.desc), e.amt.toFixed(2), csvKey(e.who)].join('|'); };
-            const existing = {};
-            expenses.forEach(function(e){ existing[sig(e)] = true; });
-            const toAdd = incoming.filter(function(e){ const k = sig(e); if (existing[k]) return false; existing[k] = true; return true; });
-            const dupes = incoming.length - toAdd.length;
-
-            if (!toAdd.length) { showToast('Tutte le spese del file sono già presenti', 'info'); return; }
-
-            const total = toAdd.reduce(function(a, e){ return a + e.amt; }, 0);
-            let msg = 'Spese da importare: ' + toAdd.length + ' (totale ' + total.toFixed(2) + ' ' + globalCurrency + ')';
-            if (dupes) msg += '\nGià presenti, saltate: ' + dupes;
-            if (skipped) msg += '\nRighe non valide ignorate: ' + skipped;
-            if (newPeople.length) msg += '\nNuovi partecipanti aggiunti: ' + newPeople.join(', ');
-            if (newCats.length) msg += '\nNuove categorie aggiunte: ' + newCats.join(', ');
-            msg += '\n\nConfermi l\'importazione?';
-
-            openModal('📥 Importa da CSV', msg, false, false, 'Importa', 'modal-btn-confirm', function(ok)
-            {
-                if (!ok) return;
-                newPeople.forEach(function(n){ if (!participants.includes(n)) participants.push(n); });
-                newCats.forEach(function(c){ if (!customCategories.includes(c)) customCategories.push(c); });
-                toAdd.forEach(function(e){
-                    if (e.split === 'shared' && !e.sharedWith.length) e.sharedWith = participants.slice();
-                    expenses.push(e);
-                });
-                addLog('Import CSV: ' + toAdd.length + ' spese');
-                addNotification('expense', 'Importate ' + toAdd.length + ' spese da CSV');
-                saveToFirebase();
-                updateUI();
-                showToast('Importate ' + toAdd.length + ' spese', 'success');
-            });
-        }
-
-                function exportCSV() 
+        function exportCSV() 
         {
             let csv = "Viaggio di gruppo: " + currentTripName + " (Codice Auth: " + currentTripCode + ")\n\nREGISTRO COMPLETO DELLE SPESE;\n";
             csv += "Data Ufficiale;Oggetto;Reparto;Pagatore Iniziale;Costo Complessivo (" + globalCurrency + ");Metodo Divisione;Soggetto Riferimento;";
