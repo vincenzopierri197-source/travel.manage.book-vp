@@ -3774,78 +3774,79 @@ window.addEventListener('DOMContentLoaded', function()
          * ============================================================================
          */
         function flowCreateTrip() 
+{
+    openModal(
+        "Nuovo Viaggio", 
+        "Nome e valuta del viaggio:", 
+        true, 
+        true, 
+        "Crea", 
+        "modal-btn-confirm", 
+        async function(res) 
         {
-            openModal(
-                "Nuovo Viaggio", 
-                "Nome e valuta del viaggio:", 
-                true, 
-                true, 
-                "Crea", 
-                "modal-btn-confirm", 
-                async function(res) 
+            if (res && res.name && res.name.trim()) 
+            {
+                showLoading(true, "Creazione...");
+                
+                const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+                
+                try 
                 {
-                    if (res && res.name && res.name.trim()) 
-                    {
-                        try
-                        {
-                            await ensureFirebaseAuth();
-                        }
-                        catch (authError)
-                        {
-                            /* Con le Rules di test precedenti l'app resta compatibile. */
-                            console.warn("Auth non disponibile durante la creazione:", authError);
-                        }
-                        showLoading(true, "Creazione...");
-                        
-                        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
-                        
-                        try 
-                        {
-                            await db.collection("trips").doc(code).set({
-                                name: res.name.trim(), 
-                                currency: res.currency, 
-                                budget: 0, 
-                                itineraryLink: "",
-                                logs: [
-                                    {
-                                        time: new Date().toLocaleString(), 
-                                        msg: "Viaggio Creato"
-                                    }
-                                ],
-                                participants: [
-                                    "Persona 1", 
-                                    "Persona 2"
-                                ],
-                                categories: [
-                                    "🍔 Cibo", 
-                                    "🛏️ Alloggio", 
-                                    "⛽ Benzina", 
-                                    "🏛️ Turismo", 
-                                    "✈️ Trasporti", 
-                                    "🅿️ Parcheggio", 
-                                    "🛍️ Altro"
-                                ], 
-                                expenses: [],
-                                settledPayments: [],
-                                settlementHistory: [],
-                                notifications: [{id:"n_"+Date.now(),type:"system",message:"Viaggio creato",time:new Date().toISOString(),read:false,by:"Sistema"}],
-                                schemaVersion: 2
-                            });
-                            
-                            showLoading(false); 
-                            showToast("Creato! Codice: " + code, "success"); 
-                            
-                            joinTripWithCode(code);
-                        } 
-                        catch (e) 
-                        { 
-                            showLoading(false); 
-                            showToast("Errore di connessione", "error"); 
-                        }
+                    // Tenta l'autenticazione anonima se non è già attiva
+                    try {
+                        await ensureFirebaseAuth();
+                    } catch (authErr) {
+                        console.warn("Auth anonima non riuscita, proseguo in modalità diretta:", authErr);
                     }
+
+                    // Scrittura su Firestore con timeout di salvataggio
+                    await db.collection("trips").doc(code).set({
+                        name: res.name.trim(), 
+                        currency: res.currency || "€", 
+                        budget: 0, 
+                        itineraryLink: "",
+                        logs: [
+                            {
+                                time: new Date().toLocaleString(), 
+                                msg: "Viaggio Creato"
+                            }
+                        ],
+                        participants: [
+                            "Persona 1", 
+                            "Persona 2"
+                        ],
+                        categories: [
+                            "🍔 Cibo", 
+                            "🛏️ Alloggio", 
+                            "⛽ Benzina", 
+                            "🏛️ Turismo", 
+                            "✈️ Trasporti", 
+                            "🅿️ Parcheggio", 
+                            "🛍️ Altro"
+                        ], 
+                        expenses: [],
+                        settledPayments: [],
+                        settlementHistory: [],
+                        notifications: [{id:"n_"+Date.now(),type:"system",message:"Viaggio creato",time:new Date().toISOString(),read:false,by:"Sistema"}],
+                        schemaVersion: 2
+                    });
+                    
+                    showLoading(false); 
+                    showToast("Creato! Codice: " + code, "success"); 
+                    
+                    // Entra subito nel viaggio creato
+                    joinTripWithCode(code);
+                } 
+                catch (e) 
+                { 
+                    showLoading(false); 
+                    console.error("Errore creazione viaggio:", e);
+                    showToast("Errore durante la creazione: " + (e.message || "Problema di connessione"), "error"); 
                 }
-            );
+            }
         }
+    );
+}
 
         function flowJoinTrip() 
         {
