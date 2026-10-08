@@ -3801,6 +3801,7 @@ window.addEventListener('DOMContentLoaded', function()
                 {
                     if (res && res.name && res.name.trim()) 
                     {
+                        let createAuthErr = null;
                         try
                         {
                             await ensureFirebaseAuth();
@@ -3809,6 +3810,7 @@ window.addEventListener('DOMContentLoaded', function()
                         {
                             /* Con le Rules di test precedenti l'app resta compatibile. */
                             console.warn("Auth non disponibile durante la creazione:", authError);
+                            createAuthErr = authError;
                         }
                         showLoading(true, "Creazione...");
                         
@@ -3855,7 +3857,25 @@ window.addEventListener('DOMContentLoaded', function()
                         catch (e) 
                         { 
                             showLoading(false); 
-                            showToast("Errore di connessione", "error"); 
+                            console.error("Creazione viaggio fallita:", e);
+                            const errCode = (e && e.code) ? e.code : "";
+                            let errMsg = "Errore di connessione";
+                            if (errCode === "permission-denied")
+                            {
+                                errMsg = firebaseAuthUser
+                                    ? "Permesso negato da Firebase: controlla le regole di Firestore"
+                                    : "Permesso negato: accesso anonimo non attivo o regole Firestore da aggiornare";
+                            }
+                            else if (errCode === "unavailable")
+                            {
+                                errMsg = "Firebase non raggiungibile: controlla la connessione";
+                            }
+                            else if (e && e.message)
+                            {
+                                errMsg = "Errore: " + e.message;
+                            }
+                            if (createAuthErr && createAuthErr.code) errMsg += " [auth: " + createAuthErr.code + "]";
+                            showToast(errMsg, "error"); 
                         }
                     }
                 }
